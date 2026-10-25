@@ -16,4 +16,4 @@ description: 사용자가 문제를 이해하도록 개념, 맥락, 핵심 문�
 근거가 부족한 내용은 추측으로 단정하지 않고 불확실성을 명시한다.
 
 목표의 구체화는 Define에서 진행한다.
-Concept, Context, Problem이 각각 설명되고, 남은 불확실성이 목록으로 적히면 끝.
+Concept, Context, Problem이 각각 설명되고, 남은 불확실성이 목록으로 `.goal/<goal>/analysis.md`에 적히면 끝.

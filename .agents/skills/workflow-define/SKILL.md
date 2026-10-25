@@ -7,15 +7,17 @@ description: workflow-grill로 사용자를 인터뷰해 목표를 Objective, De
 
 `workflow-grill` 스킬을 로드해, 사용자가 제공한 목표·현재 상황·조건에서 출발해 인터뷰하고,
 결과를 goal.md에 나열식·계층적으로 기록한다.
+`.goal/<goal>/analysis.md`가 있으면 먼저 읽고, 그 남은 불확실성을 첫 질문 후보로 쓴다.
+질문마다 그 질문에 필요한 배경과 용어를 먼저 설명한다.
 
 - Objective: 궁극적으로 달성하려는 상태
 - Deliverable: 완성됐을 때 산출물이 어떤 모습인지. 읽는 사람이 이상한 점을 알아볼 수 있는 해상도로
 - Requirements: 목표 달성을 위해 만족해야 하는 조건
 - Constraints: 목표 달성 과정에서 지켜야 하는 제약
 - Out of scope: 이번 목표에서 하지 않기로 한 것
-- Evaluation: Requirements와 Constraints 항목마다 Criteria(성공 조건), Method(확인 방법), Evidence(판단 증거). 평가가 불필요한 항목은 그 이유
+- Evaluation: Requirements와 Constraints 항목마다 Criteria(성공 조건), Method(확인 방법), Evidence(판단 증거). 평가가 불필요한 항목은 그 이유. 코드를 만드는 목표면 `codebase-design` 스킬을 로드해, Method에 테스트할 seam(공개 인터페이스)을 그 용어로 적는다
 
-tree는 Deliverable까지 내려간다. 만드는 순서와 방법만 Plan에서 정한다. 위 여섯 항목의 미결정이 질문 대상이며,
+tree는 Plan이 사용자에게 다시 묻지 않고 ticket을 만들 수 있을 때까지 내려간다. 위 여섯 항목의 미결정이 질문 대상이며,
 Requirement나 Constraint가 정해지면 "어떻게 확인하나"가 그 자식 질문으로 frontier에 오른다.
 Round마다 goal.md를 갱신하고, 합의·미결정·가정을 구분해 적는다.
 
