@@ -56,3 +56,15 @@
 | 05 | ① `git diff`가 세 파일뿐이고, 고친 곳의 수가 문장 지도 행 수와 같음(analysis 1, define 4, verify 3) ② 세 파일의 frontmatter가 그대로 읽힘 | `git diff`, frontmatter 파싱. 05 직후 |
 | 06 | ① `git diff`가 추가만 있고(기존 줄 그대로) 추가가 G1, G2 두 곳 ② commit 규칙 문구(`git add`, `-A`)가 `.agents/skills/` 아래 다른 파일에 없음(C4). [사실] workflow-handoff에는 중단 때 쓰는 wip commit 문장("`git add <files>`, never `-A`")이 이미 있다. 이건 범위 밖 스킬의 다른 규칙이라 점검에서 뺀다 | `git diff`, `grep`. 06 직후 |
 | 07 | 사용자의 승인, 또는 고칠 목록과 그 처리가 이 plan.md에 적힘. 고친 것은 별도 commit | 사용자 답. 06 뒤 |
+
+## Execute 기록 (2026-10-25)
+
+| 작업 | 상태 | Checks 결과 |
+|---|---|---|
+| 01 tdd 가져오기 | 완료. 커밋 `b46f2d5` | ① PASS: 조립 스크립트 assert 3/3(T1, T3, T4의 원문 구절이 각각 정확히 한 번) ② PASS: `tests.md`, `mocking.md`가 원본과 diff 없음 ③ PASS: frontmatter가 YAML로 읽힘, `name: tdd` ④ PASS: `.claude/skills/tdd/`로 읽힘. 커밋 파일 3개뿐 |
+| 02 codebase-design 가져오기 | 완료. 커밋 `eb95ff2` | ① PASS: 세 파일이 원본과 diff 없음(`.claude/skills/` 경로로 비교) ② PASS. 커밋 파일 3개뿐 |
+| 03 workflow-plan 다시 쓰기 | 완료. 커밋 `0e77dd8` | ① PASS: assert 21/21 ② PASS: frontmatter `name: workflow-plan`, `disable-model-invocation: true` ③ PASS: `.claude/skills/`로 읽힘. 커밋 파일 1개뿐 |
+| 04 workflow-execute 다시 쓰기 | 완료. 커밋 `be63d38` | ① PASS: assert 19/19 ② PASS: frontmatter `name: workflow-execute`, `disable-model-invocation: true`. 커밋 파일 1개뿐 |
+| 05 한국어 스킬 고치기 | 완료. 커밋 `89047a7` | ① PASS: 고친 곳이 analysis 1, define 4(F1·F2는 한 덩어리 두 줄, F3, F4), verify 3(V1·V2 두 줄, V3)으로 지도와 같음. `git diff --stat`에 보인 `.goal/workflow-handoff/plan.md`는 이 세션 전부터 있던 다른 세션의 변경이라 제외 ② PASS: 세 파일 frontmatter가 읽힘. 커밋 파일 3개뿐 |
+| 06 AGENTS.md 고치기 | 완료. 커밋 `01a13c8` | ① PASS: 추가 7줄, 삭제 0줄, G1과 G2 두 곳 ② PASS: `git add`, ``never `-A` ``, "Do not commit mid-Round" 문구가 workflow-handoff를 빼면 `.agents/skills/` 아래에 없음. 커밋 파일 1개뿐 |
+| 07 사용자 검토 | 미완. 사용자가 "한눈에 읽히는지는 새로운 goal로 다시 검토해서 진행하겠다"고 함 | 승인도 고칠 목록도 없음. goal.md C4의 "사용자 검토" 부분은 이번 Verify에서 UNKNOWN(새 goal 대기)이 된다. 검토 때 볼 만한 곳으로 네 가지를 짚어 두었다. ① workflow-plan 65~67줄에 "Write"가 연달아 나옴 ② 템플릿 태그가 `<local-ticket-template>` 그대로 ③ workflow-execute에 `#` 제목이 없음 ④ 영어 스킬과 한국어 스킬이 섞임 |
