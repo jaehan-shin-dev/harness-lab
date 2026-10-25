@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>intent.md와 goal.md</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 한 열 문서. 본문 폭 68자 안팎, 표와 체인 그림만 넓게 쓰고 각자 가로 스크롤 */
+:root {
+  --bg: #f5f7f8;
+  --surface: #ffffff;
+  --fg: #172027;
+  --muted: #56626c;
+  --line: #d9e0e4;
+  --accent: #0a6a72;
+  --accent-soft: #e1f0f0;
+  --interp: #8a5600;
+  --interp-soft: #f6ecd8;
+  --fact: #3a529e;
+  --fact-soft: #e5eaf7;
+  --same: #1d7440;
+  --part: #8a5600;
+  --none: #7d868e;
+  --f-problem: #b6452f;
+  --f-outcome: #0a6a72;
+  --f-constraint: #3a529e;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111619; --surface: #182024; --fg: #e3e9ec; --muted: #98a5ae; --line: #2a353b;
+    --accent: #5cc1c8; --accent-soft: #12302f; --interp: #e2b25e; --interp-soft: #33280f;
+    --fact: #93a8ee; --fact-soft: #1b2440; --same: #6fce8e; --part: #e2b25e; --none: #8a949c;
+    --f-problem: #ee8b74; --f-outcome: #5cc1c8; --f-constraint: #93a8ee;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111619; --surface: #182024; --fg: #e3e9ec; --muted: #98a5ae; --line: #2a353b;
+  --accent: #5cc1c8; --accent-soft: #12302f; --interp: #e2b25e; --interp-soft: #33280f;
+  --fact: #93a8ee; --fact-soft: #1b2440; --same: #6fce8e; --part: #e2b25e; --none: #8a949c;
+  --f-problem: #ee8b74; --f-outcome: #5cc1c8; --f-constraint: #93a8ee;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: max(32px, env(safe-area-inset-top, 0px)) max(48px, env(safe-area-inset-bottom, 0px));
+}
+main { max-width: 920px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.prose { max-width: 68ch; }
+h1, h2, h3 { text-wrap: balance; line-height: 1.3; margin: 0; }
+h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.375rem; font-weight: 700; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+h3 { font-size: 1.0625rem; font-weight: 700; }
+p { margin: 0; }
+ul, ol { margin: 0; padding-left: 1.25em; display: flex; flex-direction: column; gap: 6px; }
+code, pre, .mono { font-family: var(--font-mono); font-size: 0.875em; }
+code { background: var(--accent-soft); color: var(--fg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.cite { background: transparent; color: var(--muted); padding: 0; white-space: nowrap; }
+a { color: var(--accent); }
+
+.eyebrow { font-size: 0.8125rem; letter-spacing: 0.06em; color: var(--muted); font-weight: 500; }
+header { display: flex; flex-direction: column; gap: 12px; }
+.lead { color: var(--muted); max-width: 68ch; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 0.875rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.tag {
+  display: inline-block; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em;
+  padding: 1px 7px; border-radius: 999px; line-height: 1.6; vertical-align: 0.1em; white-space: nowrap;
+}
+.tag.src { color: var(--accent); background: var(--accent-soft); }
+.tag.interp { color: var(--interp); background: var(--interp-soft); }
+.tag.fact { color: var(--fact); background: var(--fact-soft); }
+
+.answer {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 24px; display: flex; flex-direction: column; gap: 14px;
+}
+.answer .verdict { font-size: 1.25rem; font-weight: 700; }
+.answer ul { gap: 10px; }
+
+/* 체인 그림 */
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.chain {
+  display: grid; grid-template-columns: 112px repeat(5, minmax(120px, 1fr)); gap: 8px;
+  min-width: 760px; font-size: 0.875rem; line-height: 1.5;
+}
+.chain .colhead { color: var(--muted); font-size: 0.75rem; letter-spacing: 0.06em; font-weight: 500; padding: 0 4px; }
+.chain .rowhead { font-weight: 700; align-self: center; }
+.cell {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 12px; display: flex; flex-direction: column; gap: 4px;
+}
+.cell strong { font-family: var(--font-mono); font-size: 0.9375rem; font-weight: 500; }
+.cell small { color: var(--muted); font-size: 0.8125rem; }
+.cell.ghost { background: transparent; border-style: dashed; color: var(--muted); }
+.cell.goal { border-color: var(--accent); background: var(--accent-soft); grid-column: span 2; }
+.cell.goal .split { display: flex; gap: 8px; flex-wrap: wrap; }
+.cell.goal .split span { flex: 1 1 140px; border-top: 1px dashed var(--accent); padding-top: 4px; font-size: 0.8125rem; }
+.note { font-size: 0.875rem; color: var(--muted); max-width: 68ch; }
+
+/* 표 */
+table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; line-height: 1.55; }
+.scroll table { min-width: 640px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: 0.8125rem; color: var(--muted); font-weight: 500; letter-spacing: 0.03em; border-bottom: 1px solid var(--fg); }
+td:first-child { font-weight: 500; }
+.rel { display: inline-block; font-size: 0.8125rem; font-weight: 500; white-space: nowrap; }
+.rel::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0.05em; }
+.rel.same { color: var(--same); } .rel.same::before { background: var(--same); }
+.rel.part { color: var(--part); } .rel.part::before { background: var(--part); }
+.rel.none { color: var(--none); } .rel.none::before { background: var(--none); }
+
+/* 필드 상세 */
+.fields { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--line); }
+.field {
+  display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 8px 24px;
+  padding: 20px 0; border-bottom: 1px solid var(--line);
+}
+.field h3 { font-family: var(--font-mono); font-weight: 500; font-size: 1rem; }
+.field .body { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.field blockquote {
+  margin: 0; padding: 8px 12px; border-left: 3px solid var(--accent);
+  font-family: var(--font-mono); font-size: 0.875rem; color: var(--fg); background: var(--surface);
+}
+.field .row { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 8px; align-items: start; }
+.field .row .tag { justify-self: start; margin-top: 3px; }
+.field .row.goalmap .label { font-size: 0.75rem; font-weight: 500; color: var(--muted); margin-top: 3px; }
+
+/* 사례 */
+.case { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.case > div { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.case .cap { font-size: 0.8125rem; color: var(--muted); font-weight: 500; }
+pre {
+  margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  padding: 14px 16px; overflow-x: auto; line-height: 1.6; white-space: pre;
+}
+.quote {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; line-height: 2;
+}
+.seg { border-bottom: 2px solid; padding-bottom: 1px; }
+.seg sup { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; margin-left: 2px; }
+.seg.p { border-color: var(--f-problem); } .seg.p sup { color: var(--f-problem); }
+.seg.o { border-color: var(--f-outcome); } .seg.o sup { color: var(--f-outcome); }
+.seg.c { border-color: var(--f-constraint); } .seg.c sup { color: var(--f-constraint); }
+
+/* 선택지 */
+.options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.opt { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.opt h3 { display: flex; gap: 10px; align-items: baseline; }
+.opt h3 .key { font-family: var(--font-mono); color: var(--accent); }
+.opt dl { margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 0.9375rem; }
+.opt dt { font-size: 0.75rem; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; }
+.opt dd { margin: 0; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+.two > div { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+
+.correction { border-left: 3px solid var(--fact); padding: 4px 0 4px 16px; max-width: 68ch; display: flex; flex-direction: column; gap: 6px; }
+
+footer { font-size: 0.875rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+
+@media (max-width: 760px) {
+  h1 { font-size: 1.625rem; }
+  .field { grid-template-columns: 1fr; }
+  .case, .two, .options { grid-template-columns: 1fr; }
+  .answer { padding: 18px; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="eyebrow">ANALYSIS · 2026-10-24</div>
+  <h1>intent.md와 goal.md</h1>
+  <p class="lead">Analysis 단계에서 <code>intent.md</code>를 쓴다면 어떨지 보려고, 플레이북의 <code>intent.md</code>와 이 워크플로의 <code>goal.md</code>를 나란히 놓았다. 요청에 적힌 <code>intend.md</code>는 플레이북의 <code>intent.md</code>와 같은 것으로 본다. 인용 경로의 <code>:줄</code>은 따로 적지 않으면 <code>docs/ai-native-sdlc-playbook/playbook.md</code>의 줄 번호다.</p>
+  <div class="legend">
+    <span><span class="tag src">원문</span> 플레이북 등 자료의 문장</span>
+    <span><span class="tag interp">해석</span> 내 추론</span>
+    <span><span class="tag fact">사실</span> 파일에서 확인한 것</span>
+  </div>
+</header>
+
+<section>
+  <h2>goal.md와 비슷한가</h2>
+  <div class="answer">
+    <p class="verdict">부분적으로 그렇다.</p>
+    <ul>
+      <li><strong>intent.md → goal.md 방향으로는 거의 다 들어간다.</strong> 다섯 필드 모두 <code>goal.md</code> 안에 대응하는 자리가 있다. workflow-handoff의 Objective 한 줄(<code class="cite">goal.md:8</code>)에 이미 이유(Problem), 기대 결과(Proposed outcome), 제약(Constraints)이 함께 들어 있다. Affected users and systems만 전용 칸이 없어서 Constraints C2로 들어갔다.</li>
+      <li><strong>goal.md → intent.md 방향으로는 안 맞는다.</strong> Deliverable, Requirements, Evaluation은 <code>intent.md</code>에 없다. 플레이북 기준으로 보면 <code>goal.md</code>는 <code>intent.md</code>와 <code>spec.md</code> 두 파일에 걸치고, Evaluation은 <code>plan.md</code>의 Proof에 가깝다. <span class="tag interp">해석</span></li>
+      <li>그래서 Analysis에 <code>intent.md</code>를 두는 것은 <strong>goal.md의 첫 장을 Define 전에 따로 떼어 쓰는 것</strong>에 가깝다.</li>
+      <li>필드 말고 성질에서 차이가 하나 남는다. <code>intent.md</code>는 사용자의 원래 말이 고정되어 남는다. <code>goal.md</code>는 Round마다 다시 쓰이고 이전 판이 남지 않는다.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>단계 체인</h2>
+  <p class="prose">플레이북은 단계마다 파일 하나를 커밋하고 다음 단계가 그 파일을 읽는다(<code class="cite">:87</code>, <code class="cite">:107</code>). 같은 칸에 두 워크플로의 파일을 놓으면 <code>goal.md</code>가 두 칸을 차지한다.</p>
+  <div class="scroll">
+    <div class="chain" role="table" aria-label="플레이북과 이 워크플로의 단계별 산출물">
+      <div></div>
+      <div class="colhead">이해</div>
+      <div class="colhead">의도</div>
+      <div class="colhead">요구·설계</div>
+      <div class="colhead">실행 계획</div>
+      <div class="colhead">결과</div>
+
+      <div class="rowhead">플레이북</div>
+      <div class="cell ghost"><span>파일 없음</span><small>1~2단계 대화 속 브레인스토밍 <span class="mono">:144-145</span></small></div>
+      <div class="cell"><strong>intent.md</strong><small>Stage 1 Plan. PO 승인</small></div>
+      <div class="cell"><strong>spec.md</strong><small>Stage 2 Design. intent.md와 쌍으로 커밋 <span class="mono">:207</span></small></div>
+      <div class="cell"><strong>plan.md</strong><small>Stage 3 Build. Files, Order, Risks, Proof</small></div>
+      <div class="cell"><strong>diff · PR</strong><small>Test, Deploy</small></div>
+
+      <div class="rowhead">이 워크플로</div>
+      <div class="cell"><strong>analysis.md</strong><small>관행. 스킬은 파일을 정하지 않는다</small></div>
+      <div class="cell goal">
+        <strong>goal.md</strong>
+        <div class="split">
+          <span>Objective · Constraints · Out of scope · [미결정]</span>
+          <span>Deliverable · Requirements · Evaluation</span>
+        </div>
+      </div>
+      <div class="cell"><strong>plan.md</strong><small>Strategy, Decomposition, Responsibility, Checks</small></div>
+      <div class="cell"><strong>Execute · Verify</strong><small>Verify는 goal.md Evaluation으로 판정</small></div>
+    </div>
+  </div>
+  <p class="note"><span class="tag interp">해석</span> goal.md의 Evaluation은 플레이북 plan.md의 Proof("test_status.py covers the four claim states…", <code class="cite">:269-270</code>)와 성격이 비슷하다. 이 워크플로의 plan.md Checks는 실행 중에 쓰는 점검 기준이라 Proof와는 다르다.</p>
+</section>
+
+<section>
+  <h2>항목 대응표</h2>
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th>goal.md 항목</th><th>플레이북에서 맞는 곳</th><th>intent.md와의 관계</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Objective</td><td>intent.md Problem + Proposed outcome. handoff 사례의 Objective 한 줄에 둘이 함께 있다</td><td><span class="rel same">겹침</span></td></tr>
+        <tr><td>Constraints</td><td>intent.md Constraints(C1 원문 활용), Affected users and systems(C2 대상 하네스)</td><td><span class="rel same">겹침</span></td></tr>
+        <tr><td>[미결정] 표시, frontier</td><td>intent.md Open questions. Design이 답하거나 넘긴다 <code class="cite">:205</code></td><td><span class="rel same">겹침</span></td></tr>
+        <tr><td>Out of scope</td><td>1단계 본문에만 있다("what is out of scope", <code class="cite">:144</code>). 예시에 필드는 없다</td><td><span class="rel part">일부</span></td></tr>
+        <tr><td>Deliverable</td><td>spec.md(requirements and design spec, <code class="cite">:213</code>). handoff 사례의 D1·D2 문장 지도가 여기에 해당한다</td><td><span class="rel none">intent.md에 없음</span></td></tr>
+        <tr><td>Requirements</td><td>spec.md</td><td><span class="rel none">intent.md에 없음</span></td></tr>
+        <tr><td>Evaluation</td><td>intent.md·spec.md에는 없다. plan.md Proof가 가장 가깝다</td><td><span class="rel none">intent.md에 없음</span></td></tr>
+        <tr><td>[합의]·[사실]·[가정] 표시</td><td>해당 없음</td><td><span class="rel none">goal.md에만</span></td></tr>
+        <tr><td>(없음)</td><td>intent.md Author, Status</td><td><span class="rel none">intent.md에만</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>필드 말고 다른 점</h2>
+  <div class="scroll">
+    <table>
+      <thead>
+        <tr><th></th><th>intent.md (플레이북)</th><th>goal.md (이 워크플로)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>누구의 말</td><td>originator의 말 그대로. Claude가 받아 적고 originator가 고친다 <code class="cite">:131</code> <code class="cite">:147</code></td><td>grill 인터뷰 결과를 에이전트가 정리한다. 항목마다 [합의 Qn] 표시</td></tr>
+        <tr><td>길이</td><td>약 15줄 <code class="cite">:151-169</code></td><td>123줄 (workflow-handoff 현재본, Round 5 반영)</td></tr>
+        <tr><td>언제 쓰나</td><td>브레인스토밍이 끝난 뒤 한 번 <code class="cite">:145-146</code></td><td>Round마다 갱신 <code class="cite">workflow-define:20</code>. Plan에서도 목표 수준 결정을 반영 <code class="cite">workflow-plan:17</code></td></tr>
+        <tr><td>바뀌면</td><td>첫 spec.md 커밋 뒤의 변경을 재작업 지표로 센다 <code class="cite">:178</code></td><td>바뀌는 게 정상이다. <code>.goal/</code>이 커밋되지 않아 이전 판이 남지 않는다 <span class="tag fact">사실</span></td></tr>
+        <tr><td>다음 단계의 쓰임</td><td>spec이 "the stated problem"을 푸는지 보는 잣대 <code class="cite">:205</code></td><td>Plan의 입력이고 Verify의 잣대</td></tr>
+        <tr><td>평가 기준</td><td>없음</td><td>Evaluation 표(Criteria, Method, Evidence)</td></tr>
+        <tr><td>승인</td><td>작성자가 아닌 PO <code class="cite">:173</code></td><td>사용자가 작성자이자 승인자</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>intent.md 필드 상세</h2>
+  <p class="prose">플레이북은 필드를 따로 정의하지 않는다. 필드 이름은 <code class="cite">:146</code> 한 줄과 예시(<code class="cite">:151-169</code>)에만 있다. 각 필드의 뜻은 1단계 설명과, 뒤 단계가 intent.md를 쓰는 방식에서 미루어 읽었다. 예시는 공식 템플릿이 아니다(폴더 README).</p>
+  <div class="fields">
+
+    <div class="field">
+      <h3>머리<br>제목 · Author · Status</h3>
+      <div class="body">
+        <blockquote># Intent: claims status self-service<br>Author: J. Ortiz (claims operations). Status: draft.</blockquote>
+        <div class="row"><span class="tag src">원문</span><p>커밋된 intent.md가 작성자, 시각, 수정 이력의 증거가 된다 <code class="cite">:173</code>. Status 값은 <code>draft</code> 말고는 정의되지 않았다.</p></div>
+        <div class="row"><span class="tag interp">해석</span><p>제목은 변경 하나의 이름이고 plan.md 제목 "(from intent.md 2026-06-02)"까지 이어진다 <code class="cite">:255</code>. Author는 Claude가 아니라 originator다.</p></div>
+        <div class="row goalmap"><span class="label">goal.md</span><p><code># Goal: …</code> 제목과 "작성: 날짜, Round n 반영" 줄 <code class="cite">goal.md:1-3</code>. Author 칸은 없다.</p></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <h3>Problem</h3>
+      <div class="body">
+        <blockquote>Customers phone the contact center to ask where their claim is. Handlers spend roughly a third of call time on status-only queries.</blockquote>
+        <div class="row"><span class="tag src">원문</span><p>지금 할 수 없는 것, 누가 영향을 받는지를 자기 말로 말한다 <code class="cite">:144</code>. Maintain 경로에서는 이상 징후와 그 증거다 <code class="cite">:837</code>. Design에서 spec이 이 문제를 푸는지 본다 <code class="cite">:205</code>.</p></div>
+        <div class="row"><span class="tag interp">해석</span><p>현재 상태와 그 비용(대략의 숫자)을 쓴다. 해결책 단어가 없다. "portal"은 다음 필드에서 처음 나온다.</p></div>
+        <div class="row goalmap"><span class="label">goal.md</span><p>Objective의 이유 부분("compact 품질이 아쉬우므로"). 이 워크플로의 Analysis Problem과는 다르다. Analysis Problem은 에이전트가 정리한 문제의 구조다.</p></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <h3>Proposed outcome</h3>
+      <div class="body">
+        <blockquote>Customers see claim status, next step and expected date in the portal.</blockquote>
+        <div class="row"><span class="tag src">원문</span><p>"what better looks like" <code class="cite">:144</code>. 승인 뒤 이것으로 디자인 목업을 만든다 <code class="cite">:190</code>.</p></div>
+        <div class="row"><span class="tag interp">해석</span><p>사용자가 관찰할 수 있는 끝 상태 한 문장이다. 무엇이 어디서 보이는지는 쓰고, 어떻게 만드는지는 쓰지 않는다. 2단계의 "what success looks like"(<code class="cite">:145</code>)도 이 줄에 녹아 있다.</p></div>
+        <div class="row goalmap"><span class="label">goal.md</span><p>Objective("궁극적으로 달성하려는 상태", <code class="cite">workflow-define:11</code>). 성공 기준은 Evaluation이 따로 맡는다. 목표 구체화는 Define에서 하므로(<code class="cite">workflow-analysis:18</code>) Analysis에서 쓰기 가장 어려운 필드다.</p></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <h3>Affected users<br>and systems</h3>
+      <div class="body">
+        <blockquote>Claims handlers, portal team, claims-core API.</blockquote>
+        <div class="row"><span class="tag src">원문</span><p>"who is affected by the idea" <code class="cite">:144</code>. Maintain 경로에서는 "the affected systems" <code class="cite">:837</code>.</p></div>
+        <div class="row"><span class="tag interp">해석</span><p>사람, 팀, 시스템이 섞여 있고 Problem의 고객은 빠져 있다. 이 변경에 걸리는 쪽의 목록으로 읽힌다. plan.md의 Files that change와 Risks(claims-core API rate limit)가 여기서 나온다 <code class="cite">:257-267</code>.</p></div>
+        <div class="row goalmap"><span class="label">goal.md</span><p>전용 칸이 없다. handoff 사례에서는 대상 하네스(Claude Code, pi, Codex)가 Constraints C2로 들어갔다 <code class="cite">goal.md:92-93</code>.</p></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <h3>Constraints</h3>
+      <div class="body">
+        <blockquote>No new PII in the portal session. Existing authentication only.</blockquote>
+        <div class="row"><span class="tag src">원문</span><p>"under which constraints" <code class="cite">:131</code>. Design 프롬프트가 constraints를 짚고, 조직의 skill이 spec의 제약으로 적용된다 <code class="cite">:204</code> <code class="cite">:218</code>.</p></div>
+        <div class="row"><span class="tag interp">해석</span><p>짧은 금지·한계 문장이다. plan.md 작업 1 "Add the status endpoint behind existing auth"로 이어진다 <code class="cite">:262</code>. Out of scope는 1단계 본문에만 나오고 필드가 없다.</p></div>
+        <div class="row goalmap"><span class="label">goal.md</span><p>Constraints와 Out of scope로 나뉜다.</p></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <h3>Open questions</h3>
+      <div class="body">
+        <blockquote>Do third-party loss adjusters need access too?</blockquote>
+        <div class="row"><span class="tag src">원문</span><p>Design에서 PO가 open questions가 답해졌거나 넘겨졌는지 확인한다 <code class="cite">:205</code>.</p></div>
+        <div class="row"><span class="tag interp">해석</span><p>범위를 바꿀 수 있지만 originator 혼자서는 답할 수 없는 질문이다. 이 칸이 비어 있지 않아도 승인될 수 있다.</p></div>
+        <div class="row goalmap"><span class="label">goal.md</span><p>[미결정] 표시와 grill frontier. Analysis의 남은 불확실성은 F(확인할 사실)와 D(정할 것)를 나누지만, intent 예시의 질문은 D 성격뿐이다.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>본문에는 나오지만 예시에 필드가 없는 것</h3>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>본문</th><th>위치</th><th>예시에서는</th></tr></thead>
+      <tbody>
+        <tr><td>why</td><td><code class="cite">:131</code></td><td>Problem에 녹아 있다(통화 시간의 1/3)</td></tr>
+        <tr><td>what success looks like</td><td><code class="cite">:145</code></td><td>Proposed outcome에 녹아 있다</td></tr>
+        <tr><td>what is out of scope</td><td><code class="cite">:144</code></td><td>없다</td></tr>
+        <tr><td>anomaly and its evidence</td><td><code class="cite">:837</code></td><td>(Maintain 경로) Problem 안에</td></tr>
+        <tr><td>기존 시스템의 기록 ID</td><td><code class="cite">:301</code></td><td>없다</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">원문도 "This can cover"(<code class="cite">:146</code>)라고 쓴다. 다섯 필드는 필수 목록이 아니고 조직 템플릿이 정한다.</p>
+</section>
+
+<section>
+  <h2>workflow-handoff에 적용해 보면</h2>
+  <p class="prose">왼쪽은 Analysis 당시 자료(<code class="cite">analysis.md:4</code> 요청, <code class="cite">:113</code> 추가 조사, <code class="cite">:190</code> D2)만으로 채운 intent.md다. 설명용이고 권장안이 아니다. 오른쪽은 Define이 끝나 가는 지금의 Objective다.</p>
+  <div class="case">
+    <div>
+      <span class="cap">재구성한 intent.md</span>
+<pre># Intent: workflow-handoff
+Author: 사용자. Status: draft.
+
+## Problem
+같은 하네스에서 compact된 뒤 이어서 작업하면,
+요약 품질이 아쉬워 맥락이 빠진다.
+
+## Proposed outcome
+compact 대신 handoff 문서를 남기고,
+새 세션에서 그 문서로 이어서 작업한다.
+
+## Affected users and systems
+사용자, Claude Code·pi·Codex, .goal/&lt;goal&gt;/
+
+## Constraints
+Matt handoff 원문을 기본으로 쓴다.
+문서는 .goal/&lt;goal&gt;/에 저장한다.
+
+## Open questions
+하네스를 바꾸는 경우도 포함하나?
+저장 쪽만 만드나, 재개 쪽까지 만드나?</pre>
+    </div>
+    <div>
+      <span class="cap">goal.md:8 Objective</span>
+      <div class="quote">[합의 Q1] <span class="seg p">compact 품질이 아쉬우므로<sup>Problem</sup></span>, <span class="seg o">사용자가 compact되기 전에 이 스킬을 직접 불러 상태를 남기고, 새 세션에서 그 상태로 이어서 작업한다<sup>Outcome</sup></span>. <span class="seg c">검증된 원문(pstack, Matt handoff)을 최대한 그대로 쓴다<sup>Constraints</sup></span>.</div>
+      <p class="note">한 줄에 intent.md의 세 필드가 들어 있다. "goal.md와 비슷하다"는 말이 가장 잘 맞는 지점이다.</p>
+    </div>
+  </div>
+  <ol class="prose">
+    <li><strong>Proposed outcome은 Analysis 후반에야 쓸 수 있었다.</strong> 처음 요청(<code class="cite">analysis.md:4</code>)에는 목적이 없었고, D2 답(<code class="cite">analysis.md:113</code>)이 나온 뒤에 생겼다.</li>
+    <li><strong>Open questions 두 개는 Define에서 답해졌다.</strong> 하네스를 바꾸는 경우는 Q7에서 "막지 않지만 평가하지 않는다"로(<code class="cite">goal.md:93</code>), 재개 쪽은 Q9에서 "How to resume" 블록으로(<code class="cite">goal.md:13-15</code>) 정했다.</li>
+    <li><strong>제약이 Define 중에 옮겨 갔다.</strong> 처음 요청은 "Matt handoff 원문을 기본으로"였는데, 지금은 "pstack, Matt handoff 원문을 문장 단위로"다(<code class="cite">goal.md:8</code>, C1 <code class="cite">goal.md:88-91</code>). 고정된 intent.md가 있으면 이 이동이 보인다. goal.md만 있으면 이전 판이 남지 않는다. <span class="tag interp">해석</span></li>
+    <li><strong>Analysis의 핵심 내용은 다섯 필드 어디에도 들어가지 않는다.</strong> L8 "not the current workspace" 충돌, smart zone, 단계 경계의 다섯 가지 선택이 그렇다. intent.md는 analysis.md를 대체하지 못한다.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Analysis에 intent.md를 둔다면</h2>
+  <p class="prose"><span class="tag interp">해석</span> 위 비교에서 나오는 형태는 세 가지다. 고르는 것은 사용자다. 어느 쪽이든 analysis.md는 따로 남는다.</p>
+  <div class="options">
+    <div class="opt">
+      <h3><span class="key">A</span> 두지 않는다</h3>
+      <dl>
+        <div><dt>방법</dt><dd>goal.md Objective가 intent 역할을 한다. Analysis는 지금처럼 끝난다.</dd></div>
+        <div><dt>얻는 것</dt><dd>파일과 단계의 일이 늘지 않는다.</dd></div>
+        <div><dt>잃는 것</dt><dd>사용자의 원래 말이 따로 남지 않는다.</dd></div>
+      </dl>
+    </div>
+    <div class="opt">
+      <h3><span class="key">B</span> 별도 파일로 고정</h3>
+      <dl>
+        <div><dt>방법</dt><dd>Analysis 끝에 짧은 intent.md를 쓰고 고치지 않는다. Define은 이것을 출발점으로 goal.md를 만든다.</dd></div>
+        <div><dt>얻는 것</dt><dd>원래 말과 goal.md를 나중에 대조할 수 있다. Define에 입력 파일이 생긴다.</dd></div>
+        <div><dt>비용</dt><dd>Proposed outcome을 Define 전에 써야 한다(<code class="cite">workflow-analysis:18</code>와 겹침). 원문 순서(브레인스토밍 뒤 작성)와도 반대다.</dd></div>
+      </dl>
+    </div>
+    <div class="opt">
+      <h3><span class="key">C</span> goal.md 맨 위 블록</h3>
+      <dl>
+        <div><dt>방법</dt><dd>goal.md 첫머리에 사용자 원래 말을 고정 블록으로 둔다. Analysis는 이 블록만 채운다.</dd></div>
+        <div><dt>얻는 것</dt><dd>B의 대조 효과를 파일 하나로 얻는다.</dd></div>
+        <div><dt>비용</dt><dd>Round마다 goal.md를 고칠 때 이 블록은 건드리지 않는다는 규칙이 필요하다.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>남은 불확실성</h2>
+  <div class="two">
+    <div>
+      <h3>확인할 사실</h3>
+      <ul>
+        <li><strong>F1.</strong> intent.md(또는 고정 블록)가 있으면 Define(grill)이 그것을 출발점으로 쓰고, 이미 적힌 것을 다시 묻지 않는가? skill-eval로 실험할 수 있다.</li>
+        <li><strong>F2.</strong> 짧은 의도를 먼저 적으면 Define Round 수가 줄어드는가? 근거는 사례 1건뿐이다.</li>
+        <li><strong>F3.</strong> 공식 PDF(54쪽)와는 대조하지 못했다. 텍스트를 뽑을 도구(poppler)가 없다. 폴더 README는 md가 원문 문장을 그대로 담았다고 적는다.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>사용자가 정할 것</h3>
+      <ul>
+        <li><strong>D1.</strong> A, B, C 중 어느 것인가?</li>
+        <li><strong>D2.</strong> Proposed outcome을 Analysis에서 쓰나, 가설로 표시하나, 빼나?</li>
+        <li><strong>D3.</strong> 필드는 플레이북 예시 5개, interview-me 6개(Why now, Success, Out of scope 포함), goal.md 항목 일부 중 무엇으로 하나?</li>
+        <li><strong>D4.</strong> 사용자의 명시적 확인을 Analysis 끝 조건에 넣나?</li>
+        <li><strong>D5.</strong> 고정한 의도를 git으로 남기나? harness-lab 자체 저장소를 만들 예정이다(<code class="cite">goal.md:83</code>).</li>
+        <li><strong>D6.</strong> 파일 이름은 원문의 <code>intent.md</code>인가, <code>intend.md</code>인가?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>정정</h2>
+  <div class="correction">
+    <p>앞선 답에서 "harness-lab은 커밋이 0개"라고 했다. 정확히는 harness-lab에 자기 저장소가 없고, git 저장소는 홈 폴더 전체이며 커밋이 0개다(<code class="cite">goal.md:84</code>, <code>git rev-parse --show-toplevel</code> 결과 <code>/Users/sinjaehan</code>). <span class="tag fact">사실</span></p>
+    <p>결론은 바뀌지 않는다. 지금 <code>.goal/</code>은 어느 쪽이든 커밋되어 있지 않다.</p>
+  </div>
+</section>
+
+<footer>
+  <span>근거 자료</span>
+  <span><code>docs/ai-native-sdlc-playbook/playbook.md</code>, <code>README.md</code> · <code>docs/addy-osmani-skills/interview-me/SKILL.md</code> · <code>.agents/skills/workflow-analysis</code>, <code>workflow-define</code>, <code>workflow-plan</code> SKILL.md · <code>.goal/workflow-handoff/analysis.md</code>, <code>goal.md</code>(Round 5 반영본)</span>
+</footer>
+
+</main>
+</body>
+</html>
