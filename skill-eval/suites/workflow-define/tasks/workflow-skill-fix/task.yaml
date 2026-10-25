@@ -1,0 +1,25 @@
+# 과제 3: 비코드 목표. 지난 목표 .goal/workflow-skill-fix/ (goal.md Q13·Q14, plan.md Q38)
+id: workflow-skill-fix
+title: workflow 스킬 수정 (2026-10-20 분석 1·2·3·4)
+
+workspace:
+  name: pi-lab                # 작업 폴더 이름 (프로젝트 모양)
+  source:
+    repo: .                   # pi-lab 저장소 자신
+    ref: 9fa2b04              # 당시 시점. .goal/이 없어 정답 파일이 자연히 빠진다
+    date: "2026-10-20T22:59:27+09:00"
+  git_init: true              # 새 git 1커밋 (이후 기록 제거)
+
+# 작업 폴더에 미리 넣을 파일 (goal.md Q28). from: 이 폴더 기준 고정 파일 / from_run: 이전 실행 결과물
+inputs:
+  - path: notes/2026-10-20-workflow-skill-comparison.md
+    from: inputs/comparison-2026-10-20.md    # 당시 직전 분석 답변 원문 (a02499fe… 139행)
+
+# 시작 요청: 당시 원래 요청 원문(147행) + 그 파일을 가리키는 말만 덧붙임
+start_request: >-
+  notes/2026-10-20-workflow-skill-comparison.md 기준으로,
+  goal : 1,2,3,4 수정을 해야할 것 같아. 4에서는 -eval을 기존의 과정과 합치면 어떨까?
+
+# 과제 원래 내용: 금지 단어 검사에서 뺀다 (goal.md Deliverable 단어 비노출)
+original_spans:
+  - "goal : 1,2,3,4 수정을 해야할 것 같아. 4에서는 -eval을 기존의 과정과 합치면 어떨까?"

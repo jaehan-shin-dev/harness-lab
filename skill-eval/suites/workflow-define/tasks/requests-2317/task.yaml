@@ -1,0 +1,22 @@
+# 과제 1: 작은 코드 수정. SWE-bench Verified psf__requests-2317 (goal.md Q13, plan.md Q37)
+# 시작 요청은 이슈 제목 수준으로 줄이고(Dialogue-SWEBench 방식) 이슈 본문의 사실은 답변표로 옮긴다.
+# hints_text(관리자 토론)는 쓰지 않는다. 원본 행: .goal/skill-eval/research/swe-requests-2317.json
+id: requests-2317
+title: "method = builtin_str(method) problem"
+
+workspace:
+  name: requests
+  source:
+    repo: repos/psf__requests            # .cache/ 아래, 없으면 clone_url에서 받는다
+    clone_url: https://github.com/psf/requests.git
+    ref: 091991be0da19de9108dbe5e3752917fea3d7fdc   # base_commit
+    date: "2014-10-26T19:32:46-05:00"
+  git_init: true                         # base_commit 이후 기록(실제 수정)을 없앤다
+
+inputs: []
+
+start_request: >-
+  `method = builtin_str(method)` 때문에 문제가 생기는 것 같아요. 이거 고치고 싶어요.
+
+original_spans:
+  - "method = builtin_str(method)"

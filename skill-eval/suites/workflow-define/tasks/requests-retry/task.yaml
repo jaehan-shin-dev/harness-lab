@@ -1,0 +1,20 @@
+# 과제 2: 애매한 기능 요청. ClarEval 형식(질문 → 정해진 대답)으로 직접 작성 (plan.md Q43)
+# 저장소는 과제 1과 같은 requests 시점
+id: requests-retry
+title: requests 재시도 기능
+
+workspace:
+  name: requests
+  source:
+    repo: repos/psf__requests
+    clone_url: https://github.com/psf/requests.git
+    ref: 091991be0da19de9108dbe5e3752917fea3d7fdc
+    date: "2014-10-26T19:32:46-05:00"
+  git_init: true
+
+inputs: []
+
+start_request: >-
+  requests에 재시도 기능을 넣고 싶어요.
+
+original_spans: []
