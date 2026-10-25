@@ -114,6 +114,31 @@
   - subagent 구현은 일이 독립 조각 여러 개(대략 파일 3개 이상)로 나뉠 때 이득이다. pstack은 파일 1~2개면 plan 자체를 건너뛴다(`multi-phase-plan:5`). 최근 목표는 파일 1~2개였다.
   - pi는 harness-lab에서 subagent를 쓸 수 없다(`.goal/workflow-handoff/goal.md:125`). Matt의 "/clear 후 ticket 하나씩"은 subagent 없이도 된다.
 
+#### B안에서 plan은 어떻게 바뀌나 (해석)
+
+B안은 goal을 그대로 두고, plan의 작업을 카드로 바꾸고, Plan 단계는 인터뷰 대신 정리한 뒤 쪼갠 모양만 확인받는 안이다.
+
+- 지금 plan.md는 측면별 절(Strategy, Decomposition, Responsibility, Checks)로 나뉜다. 작업 하나를 알려면 네 절을 다 봐야 한다. B는 작업별 카드로 다시 자른다.
+
+  | 지금 절 | B에서 |
+  |---|---|
+  | Strategy | 목표 수준 결정은 goal로 간다. 순서는 카드의 "막는 카드", 실행 방식은 카드의 "담당"이 된다. 남는 건 superpowers처럼 접근 방식 2~3문장(`writing-plans` 헤더의 Architecture)이거나, Matt처럼 없다 |
+  | Decomposition | 카드 목록 자체가 된다 |
+  | Responsibility | 카드마다 "담당: AI / User / 같이" |
+  | Checks | 카드마다 "합격 기준"(다 됐나, goal R·C와 연결)과 "확인 방법" 두 칸. addy task의 Acceptance criteria와 Verification이 이 모양이다 |
+
+- workflow-handoff Strategy 6개 항목(`.goal/workflow-handoff/plan.md`의 Strategy)을 나눠 보면 3개는 카드 칸으로, 3개는 goal로 간다.
+  - 카드 칸으로: Q1 실행 방식(직접 작성, subagent 안 씀), 접근 순서(막는 카드), Q7 사용자가 평가 세션 실행(담당 User)
+  - goal로: Q5 검증 범위(Evaluation), Q11 이번 Verify는 Claude Code만, Q13 goal.md 반영
+  - Q11과 Q13은 실제로 Plan 도중에 goal.md를 고친 결정이다(Define·Plan 왕복 사례). B는 이런 결정을 Define에서 끝내 두자는 뜻이기도 하다.
+- "구체화"의 뜻: B의 plan은 더 자세해지는 게 아니라, 작업 하나에 필요한 것이 카드 한 장에 모인다. 카드는 얇고 세부는 goal을 가리킨다. 파일, 인터페이스, 단계까지 적는 건 C안이다.
+- 주의: 무게가 goal 쪽으로 간다. Plan 인터뷰가 없어지면 지금 Plan에서 묻던 결정은 Define에서 묻거나 에이전트가 정해야 한다. 그걸 전부 Define 질문으로 옮기면 Define이 더 무거워진다. 그래서 B는 A-2의 "누가 정할 수 있나" 기준과 같이 가야 한다.
+  - superpowers: 사람만 답할 수 있고 결과를 바꾸는 질문만 한다(`brainstorming:170-171`).
+  - gstack: 취향 문제는 추천대로 정하고 마지막 관문에서 한꺼번에 보여 준다(`autoplan:546-556`).
+  - Matt: 카드를 만들 때는 쪼갠 크기, 막는 관계, 합치기·나누기만 묻는다(`to-tickets:50-54`).
+  - 그러면 goal은 "무엇, 왜, 확인 기준, 사람이 정한 결정"이 되고, plan은 "얇지만 혼자 서는 카드"가 된다.
+- 카드 모양 예시는 `goal-plan-boundary.html`의 "같은 작업 하나를 세 방식으로 쓰면" 절 가운데 열이다.
+
 ## 이미 되어 있는 것
 
 - 단계마다 있는 종료 조건 한 줄
@@ -146,3 +171,4 @@
 - D8. Verify 판정 맥락: 같은 세션, 새 세션, 다른 하네스 중 무엇으로 할지. Evaluation과 Checks의 역할 분리
 - D9. "배경 먼저" 규칙을 둘 곳
 - D10. 회고, 스킬 시험, 위험·대안, 규칙 강제 중 이번 범위에 넣을 것
+- D11. 카드를 plan.md 한 파일 안에 둘지, Matt처럼 카드마다 파일을 따로 둘지("one ticket per file, never a single combined file", `to-tickets:62`). 새 세션이나 subagent에 넘기기는 파일이 따로 있는 쪽이 편하고, 전체를 한눈에 보기는 한 파일이 편하다
