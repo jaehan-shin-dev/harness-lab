@@ -15,7 +15,9 @@ description: workflow-grill로 사용자를 인터뷰해 목표를 Objective, De
 - Requirements: 목표 달성을 위해 만족해야 하는 조건
 - Constraints: 목표 달성 과정에서 지켜야 하는 제약
 - Out of scope: 이번 목표에서 하지 않기로 한 것
-- Evaluation: Requirements와 Constraints 항목마다 Criteria(성공 조건), Method(확인 방법), Evidence(판단 증거). 평가가 불필요한 항목은 그 이유. 코드를 만드는 목표면 `codebase-design` 스킬을 로드해, Method에 테스트할 seam(공개 인터페이스)을 그 용어로 적는다
+- Evaluation: Requirements와 Constraints 항목마다 Criteria(성공 조건), Method(확인 방법), Evidence(판단 증거).
+  - 평가가 불필요한 항목은 그 이유.
+  - 코드를 만드는 목표면 `codebase-design` 스킬을 로드해, Method에 테스트할 seam(공개 인터페이스)을 그 용어로 적는다
 
 tree는 Plan이 사용자에게 다시 묻지 않고 ticket을 만들 수 있을 때까지 내려간다. 위 여섯 항목의 미결정이 질문 대상이며,
 Requirement나 Constraint가 정해지면 "어떻게 확인하나"가 그 자식 질문으로 frontier에 오른다.
