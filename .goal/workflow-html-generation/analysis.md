@@ -1,8 +1,9 @@
 # Analysis: HTML 제작이 매끄럽지 않았던 원인과 개선 조언
 
-작성: 2026-10-28. 같은 workflow-prototype 목표의 후속 Analysis.
+작성: 2026-10-28. 목표: workflow-html-generation. 현재 단계: Analysis.
+사용자 요청에 따라 HTML 제작 과정의 개선 분석을 workflow-prototype과 별도 목표로 분리했다.
 대상: 사용자의 “html로 만들어줘” 요청부터 HTML을 .goal/workflow-prototype에 보관한 과정.
-근거: 이 대화에 남은 도구 호출·오류·성공 결과, AGENTS.md, 최종 HTML과 analysis.md.
+근거: 이 대화에 남은 도구 호출·오류·성공 결과, [AGENTS.md](../../AGENTS.md), [사례 HTML](../workflow-prototype/prototype-and-workflow.html), [사례 분석](../workflow-prototype/analysis.md).
 도구를 다시 실행해 장애를 재현하지 않았다. 이 문서에 쓰는 진단은 관찰과 추론을 구분한다.
 
 ## Concept

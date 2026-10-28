@@ -5,7 +5,7 @@
 
 시각 자료: [HTML 분석 문서](prototype-and-workflow.html). 질문별 확인 방법과 단계별 역할을 선택해 비교할 수 있다.
 
-후속 분석: [HTML 제작 과정의 원인과 개선 조언](html-process-analysis.md).
+별도 목표: [HTML 제작 과정의 원인과 개선 조언](../workflow-html-generation/analysis.md).
 
 이 문서의 권고는 분석 결과다. 스킬 추가·수정, 목표 요구사항 확정, 프로토타입 제작은 아직 수행하지 않았다.
 
