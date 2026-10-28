@@ -1,0 +1,5 @@
+BROWSER {"protocolVersion":"1.3","product":"Chrome/156.0.8078.49","revision":"@29eb03535d5f2f4f899b95f22a92413ffde5284e","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36","jsVersion":"15.6.75.19"}
+SOURCE {"url":"file:///Users/sinjaehan/DEV/harness-lab/.goal/workflow-prototype/prototype/state-logic/index.html","profile":"/private/tmp/workflow-prototype-state-logic-QmAGf3","interface":"Mouse and keyboard input on visible select/buttons; rendered list/status observations."}
+STEP 0 {"action":"Initial screen","confirmed":[],"waitlist":[],"confirmedCount":"0 / 2 seats","waitlistCount":"0 people","notice":"Ready. No reservations yet.","history":["Experiment reset. Confirmed: —. Waitlist: —."]}
+STEP 1 {"action":"Reserve Ada","confirmed":["Ada"],"waitlist":[],"confirmedCount":"1 / 2 seats","waitlistCount":"0 people","notice":"Ada has a confirmed seat.","history":["Experiment reset. Confirmed: —. Waitlist: —.","Ada has a confirmed seat. Confirmed: Ada. Waitlist: —."]}
+FAIL Input selection missed: expected Bo, got Ada
