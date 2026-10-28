@@ -1,0 +1,8 @@
+[
+  "/Library/Developer/CommandLineTools/usr/bin/python3",
+  "/Users/sinjaehan/DEV/harness-lab/.goal/workflow-prototype/prototype/technical-feasibility/probe.py",
+  "--input",
+  "/Users/sinjaehan/DEV/harness-lab/.goal/workflow-prototype/prototype/technical-feasibility/wait.json",
+  "--database",
+  "/Users/sinjaehan/DEV/harness-lab/.goal/workflow-prototype/prototype/technical-feasibility/evidence/red-wait/reservations.sqlite"
+]
