@@ -1,0 +1,3666 @@
+{
+  "nodes": [
+    {
+      "nodeId": "235",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "RootWebArea"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 144
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘의 작업 · 세 가지 보기",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label",
+            "superseded": true
+          },
+          {
+            "type": "relatedElement",
+            "value": {
+              "type": "computedString",
+              "value": "오늘의 작업 · 세 가지 보기"
+            },
+            "nativeSource": "title"
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "focused",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "url",
+          "value": {
+            "type": "string",
+            "value": "http://127.0.0.1:56130/"
+          }
+        }
+      ],
+      "childIds": [
+        "239"
+      ],
+      "backendDOMNodeId": 235,
+      "frameId": "5819D5D23F08DFDE979C6EC40778C442"
+    },
+    {
+      "nodeId": "239",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "235",
+      "childIds": [
+        "245"
+      ],
+      "backendDOMNodeId": 239
+    },
+    {
+      "nodeId": "245",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "239",
+      "childIds": [
+        "246",
+        "319"
+      ],
+      "backendDOMNodeId": 245
+    },
+    {
+      "nodeId": "246",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "main"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 118
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "attribute",
+            "attribute": "title"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "245",
+      "childIds": [
+        "247",
+        "248",
+        "255",
+        "264",
+        "313"
+      ],
+      "backendDOMNodeId": 246
+    },
+    {
+      "nodeId": "319",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "notRendered",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "245",
+      "childIds": [
+        "417"
+      ],
+      "backendDOMNodeId": 319
+    },
+    {
+      "nodeId": "417",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "notRendered",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "319",
+      "childIds": [],
+      "backendDOMNodeId": 417
+    },
+    {
+      "nodeId": "247",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "generic"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 88
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "246",
+      "childIds": [
+        "325"
+      ],
+      "backendDOMNodeId": 247
+    },
+    {
+      "nodeId": "248",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "sectionheader"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 95
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "attribute",
+            "attribute": "title"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "246",
+      "childIds": [
+        "249",
+        "253"
+      ],
+      "backendDOMNodeId": 248
+    },
+    {
+      "nodeId": "255",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "tablist"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 165
+      },
+      "name": {
+        "type": "computedString",
+        "value": "보기 비교",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "type": "computedString",
+              "value": "보기 비교"
+            },
+            "attribute": "aria-label",
+            "attributeValue": {
+              "type": "string",
+              "value": "보기 비교"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "multiselectable",
+          "value": {
+            "type": "boolean",
+            "value": false
+          }
+        },
+        {
+          "name": "orientation",
+          "value": {
+            "type": "token",
+            "value": "horizontal"
+          }
+        }
+      ],
+      "parentId": "246",
+      "childIds": [
+        "236",
+        "258",
+        "261"
+      ],
+      "backendDOMNodeId": 255
+    },
+    {
+      "nodeId": "264",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "tabpanel"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 166
+      },
+      "name": {
+        "type": "computedString",
+        "value": "B · 카드 하나씩 둘러보기",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "value": {
+              "type": "computedString",
+              "value": "B · 카드 하나씩 둘러보기"
+            },
+            "attribute": "aria-labelledby",
+            "attributeValue": {
+              "type": "idrefList",
+              "value": "tab-cards",
+              "relatedNodes": [
+                {
+                  "backendDOMNodeId": 258,
+                  "idref": "tab-cards",
+                  "text": "B · 카드 하나씩 둘러보기"
+                }
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label",
+            "superseded": true
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "labelledby",
+          "value": {
+            "type": "nodeList",
+            "relatedNodes": [
+              {
+                "backendDOMNodeId": 258,
+                "idref": "tab-cards",
+                "text": "B · 카드 하나씩 둘러보기"
+              }
+            ]
+          }
+        }
+      ],
+      "parentId": "246",
+      "childIds": [
+        "265",
+        "237",
+        "272"
+      ],
+      "backendDOMNodeId": 264
+    },
+    {
+      "nodeId": "313",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "246",
+      "childIds": [
+        "314",
+        "315"
+      ],
+      "backendDOMNodeId": 313
+    },
+    {
+      "nodeId": "314",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "strong"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 160
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "313",
+      "childIds": [
+        "372"
+      ],
+      "backendDOMNodeId": 314
+    },
+    {
+      "nodeId": "315",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "313",
+      "childIds": [
+        "373",
+        "316",
+        "374"
+      ],
+      "backendDOMNodeId": 315
+    },
+    {
+      "nodeId": "373",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토할 작업이 어디에 있고, 담당자와 마감은 어떻게 보이나요?",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토할 작업이 어디에 있고, 담당자와 마감은 어떻게 보이나요?"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "315",
+      "childIds": [
+        "-1000000214"
+      ],
+      "backendDOMNodeId": 373
+    },
+    {
+      "nodeId": "316",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "LineBreak"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 109
+      },
+      "name": {
+        "type": "computedString",
+        "value": "\n",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "\n"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "315",
+      "childIds": [
+        "-1000000215"
+      ],
+      "backendDOMNodeId": 316
+    },
+    {
+      "nodeId": "374",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "보기와 필터만 바뀌며, 실제 작업 데이터는 저장하지 않습니다.",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "보기와 필터만 바뀌며, 실제 작업 데이터는 저장하지 않습니다."
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "315",
+      "childIds": [
+        "-1000000216"
+      ],
+      "backendDOMNodeId": 374
+    },
+    {
+      "nodeId": "325",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "A SMALL WORKSPACE STUDY / 01",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "A SMALL WORKSPACE STUDY / 01"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "247",
+      "childIds": [
+        "-1000000180"
+      ],
+      "backendDOMNodeId": 325
+    },
+    {
+      "nodeId": "249",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "248",
+      "childIds": [
+        "250",
+        "251"
+      ],
+      "backendDOMNodeId": 249
+    },
+    {
+      "nodeId": "250",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "heading"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 96
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘의 작업",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "오늘의 작업"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "level",
+          "value": {
+            "type": "integer",
+            "value": 1
+          }
+        }
+      ],
+      "parentId": "249",
+      "childIds": [
+        "326"
+      ],
+      "backendDOMNodeId": 250
+    },
+    {
+      "nodeId": "251",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "paragraph"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 133
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "249",
+      "childIds": [
+        "327",
+        "252",
+        "328"
+      ],
+      "backendDOMNodeId": 251
+    },
+    {
+      "nodeId": "253",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "248",
+      "childIds": [
+        "254",
+        "330"
+      ],
+      "backendDOMNodeId": 253
+    },
+    {
+      "nodeId": "254",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "strong"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 160
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "253",
+      "childIds": [
+        "329"
+      ],
+      "backendDOMNodeId": 254
+    },
+    {
+      "nodeId": "330",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "수요일 · 데모 데이터",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "수요일 · 데모 데이터"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "253",
+      "childIds": [
+        "-1000000186"
+      ],
+      "backendDOMNodeId": 330
+    },
+    {
+      "nodeId": "236",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "tab"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 164
+      },
+      "name": {
+        "type": "computedString",
+        "value": "A · 목록 한 줄에서 나란히",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "relatedElement",
+            "nativeSource": "label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "A · 목록 한 줄에서 나란히"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "invalid",
+          "value": {
+            "type": "token",
+            "value": "false"
+          }
+        },
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "selected",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": false
+          }
+        },
+        {
+          "name": "controls",
+          "value": {
+            "type": "idrefList",
+            "value": "task-panel",
+            "relatedNodes": [
+              {
+                "backendDOMNodeId": 264,
+                "idref": "task-panel"
+              }
+            ]
+          }
+        }
+      ],
+      "parentId": "255",
+      "childIds": [
+        "256",
+        "332"
+      ],
+      "backendDOMNodeId": 236
+    },
+    {
+      "nodeId": "258",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "tab"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 164
+      },
+      "name": {
+        "type": "computedString",
+        "value": "B · 카드 하나씩 둘러보기",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "relatedElement",
+            "nativeSource": "label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "B · 카드 하나씩 둘러보기"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "invalid",
+          "value": {
+            "type": "token",
+            "value": "false"
+          }
+        },
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "selected",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "controls",
+          "value": {
+            "type": "idrefList",
+            "value": "task-panel",
+            "relatedNodes": [
+              {
+                "backendDOMNodeId": 264,
+                "idref": "task-panel"
+              }
+            ]
+          }
+        }
+      ],
+      "parentId": "255",
+      "childIds": [
+        "259",
+        "334"
+      ],
+      "backendDOMNodeId": 258
+    },
+    {
+      "nodeId": "261",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "tab"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 164
+      },
+      "name": {
+        "type": "computedString",
+        "value": "C · 상태 보드 상태별로 모아 보기",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "relatedElement",
+            "nativeSource": "label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "C · 상태 보드 상태별로 모아 보기"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "invalid",
+          "value": {
+            "type": "token",
+            "value": "false"
+          }
+        },
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "selected",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": false
+          }
+        },
+        {
+          "name": "controls",
+          "value": {
+            "type": "idrefList",
+            "value": "task-panel",
+            "relatedNodes": [
+              {
+                "backendDOMNodeId": 264,
+                "idref": "task-panel"
+              }
+            ]
+          }
+        }
+      ],
+      "parentId": "255",
+      "childIds": [
+        "262",
+        "336"
+      ],
+      "backendDOMNodeId": 261
+    },
+    {
+      "nodeId": "265",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "264",
+      "childIds": [
+        "266",
+        "269"
+      ],
+      "backendDOMNodeId": 265
+    },
+    {
+      "nodeId": "266",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "265",
+      "childIds": [
+        "267",
+        "268"
+      ],
+      "backendDOMNodeId": 266
+    },
+    {
+      "nodeId": "267",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "heading"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 96
+      },
+      "name": {
+        "type": "computedString",
+        "value": "작업 카드",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "작업 카드"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "level",
+          "value": {
+            "type": "integer",
+            "value": 2
+          }
+        }
+      ],
+      "parentId": "266",
+      "childIds": [
+        "536"
+      ],
+      "backendDOMNodeId": 267
+    },
+    {
+      "nodeId": "268",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "paragraph"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 133
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "266",
+      "childIds": [
+        "537"
+      ],
+      "backendDOMNodeId": 268
+    },
+    {
+      "nodeId": "269",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "status"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 159
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "attribute",
+            "attribute": "title"
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "live",
+          "value": {
+            "type": "token",
+            "value": "polite"
+          }
+        },
+        {
+          "name": "atomic",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        },
+        {
+          "name": "relevant",
+          "value": {
+            "type": "tokenList",
+            "value": "additions text"
+          }
+        }
+      ],
+      "parentId": "265",
+      "childIds": [
+        "538"
+      ],
+      "backendDOMNodeId": 269
+    },
+    {
+      "nodeId": "237",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "group"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 93
+      },
+      "name": {
+        "type": "computedString",
+        "value": "작업 필터",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "type": "computedString",
+              "value": "작업 필터"
+            },
+            "attribute": "aria-label",
+            "attributeValue": {
+              "type": "string",
+              "value": "작업 필터"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "264",
+      "childIds": [
+        "238",
+        "270",
+        "271"
+      ],
+      "backendDOMNodeId": 237
+    },
+    {
+      "nodeId": "272",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "generic"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 88
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "264",
+      "childIds": [
+        "527",
+        "535"
+      ],
+      "backendDOMNodeId": 272
+    },
+    {
+      "nodeId": "372",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "비교할 질문",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "비교할 질문"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "314",
+      "childIds": [
+        "-1000000213"
+      ],
+      "backendDOMNodeId": 372
+    },
+    {
+      "nodeId": "-1000000214",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토할 작업이 어디에 있고, 담당자와 마감은 어떻게 보이나요?"
+      },
+      "properties": [],
+      "parentId": "373",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000215",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "\n"
+      },
+      "properties": [],
+      "parentId": "316",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000216",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "보기와 필터만 바뀌며, 실제 작업 데이터는 저장하지 않습니다."
+      },
+      "properties": [],
+      "parentId": "374",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000180",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "A SMALL WORKSPACE STUDY / 01"
+      },
+      "properties": [],
+      "parentId": "325",
+      "childIds": []
+    },
+    {
+      "nodeId": "326",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘의 작업",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "오늘의 작업"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "250",
+      "childIds": [
+        "-1000000181"
+      ],
+      "backendDOMNodeId": 326
+    },
+    {
+      "nodeId": "327",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "같은 다섯 가지 작업, 세 가지 보기.",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "같은 다섯 가지 작업, 세 가지 보기."
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "251",
+      "childIds": [
+        "-1000000182"
+      ],
+      "backendDOMNodeId": 327
+    },
+    {
+      "nodeId": "252",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "LineBreak"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 109
+      },
+      "name": {
+        "type": "computedString",
+        "value": "\n",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "\n"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "251",
+      "childIds": [
+        "-1000000183"
+      ],
+      "backendDOMNodeId": 252
+    },
+    {
+      "nodeId": "328",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토할 일을 찾고 작업을 눌러 내용을 확인해 보세요.",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토할 일을 찾고 작업을 눌러 내용을 확인해 보세요."
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "251",
+      "childIds": [
+        "-1000000184"
+      ],
+      "backendDOMNodeId": 328
+    },
+    {
+      "nodeId": "329",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "10월 28일",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "10월 28일"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "254",
+      "childIds": [
+        "-1000000185"
+      ],
+      "backendDOMNodeId": 329
+    },
+    {
+      "nodeId": "-1000000186",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "수요일 · 데모 데이터"
+      },
+      "properties": [],
+      "parentId": "330",
+      "childIds": []
+    },
+    {
+      "nodeId": "256",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "strong"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 160
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "236",
+      "childIds": [
+        "331"
+      ],
+      "backendDOMNodeId": 256
+    },
+    {
+      "nodeId": "332",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "한 줄에서 나란히",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "한 줄에서 나란히"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "236",
+      "childIds": [
+        "-1000000188"
+      ],
+      "backendDOMNodeId": 332
+    },
+    {
+      "nodeId": "259",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "strong"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 160
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "258",
+      "childIds": [
+        "333"
+      ],
+      "backendDOMNodeId": 259
+    },
+    {
+      "nodeId": "334",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "하나씩 둘러보기",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "하나씩 둘러보기"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "258",
+      "childIds": [
+        "-1000000190"
+      ],
+      "backendDOMNodeId": 334
+    },
+    {
+      "nodeId": "262",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "strong"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 160
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "261",
+      "childIds": [
+        "335"
+      ],
+      "backendDOMNodeId": 262
+    },
+    {
+      "nodeId": "336",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "상태별로 모아 보기",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "상태별로 모아 보기"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "261",
+      "childIds": [
+        "-1000000192"
+      ],
+      "backendDOMNodeId": 336
+    },
+    {
+      "nodeId": "536",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "작업 카드",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "작업 카드"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "267",
+      "childIds": [
+        "-1000000314"
+      ],
+      "backendDOMNodeId": 536
+    },
+    {
+      "nodeId": "537",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "작업마다 같은 크기의 공간을 두어 내용을 살펴봅니다.",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "작업마다 같은 크기의 공간을 두어 내용을 살펴봅니다."
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "268",
+      "childIds": [
+        "-1000000315"
+      ],
+      "backendDOMNodeId": 537
+    },
+    {
+      "nodeId": "538",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "2개 작업 표시",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "2개 작업 표시"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "269",
+      "childIds": [
+        "-1000000316"
+      ],
+      "backendDOMNodeId": 538
+    },
+    {
+      "nodeId": "238",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "button"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 175
+      },
+      "name": {
+        "type": "computedString",
+        "value": "전체 5",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "relatedElement",
+            "nativeSource": "label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "전체 5"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "invalid",
+          "value": {
+            "type": "token",
+            "value": "false"
+          }
+        },
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "pressed",
+          "value": {
+            "type": "tristate",
+            "value": "false"
+          }
+        }
+      ],
+      "parentId": "237",
+      "childIds": [
+        "340"
+      ],
+      "backendDOMNodeId": 238
+    },
+    {
+      "nodeId": "270",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "button"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 175
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요 2",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "relatedElement",
+            "nativeSource": "label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토 필요 2"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "invalid",
+          "value": {
+            "type": "token",
+            "value": "false"
+          }
+        },
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "focused",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "pressed",
+          "value": {
+            "type": "tristate",
+            "value": "true"
+          }
+        }
+      ],
+      "parentId": "237",
+      "childIds": [
+        "341"
+      ],
+      "backendDOMNodeId": 270
+    },
+    {
+      "nodeId": "271",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "237",
+      "childIds": [
+        "342"
+      ],
+      "backendDOMNodeId": 271
+    },
+    {
+      "nodeId": "342",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "작업을 누르면 상세 내용이 열립니다",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "작업을 누르면 상세 내용이 열립니다"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "271",
+      "childIds": [
+        "-1000000198"
+      ],
+      "backendDOMNodeId": 342
+    },
+    {
+      "nodeId": "527",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "button"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 9
+      },
+      "name": {
+        "type": "computedString",
+        "value": "랜딩 페이지 문구 검토 상세 보기",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "type": "computedString",
+              "value": "랜딩 페이지 문구 검토 상세 보기"
+            },
+            "attribute": "aria-label",
+            "attributeValue": {
+              "type": "string",
+              "value": "랜딩 페이지 문구 검토 상세 보기"
+            }
+          },
+          {
+            "type": "relatedElement",
+            "superseded": true,
+            "nativeSource": "label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토 필요 랜딩 페이지 문구 검토 웹사이트 리뉴얼 오늘 14:00 담당 서연"
+            },
+            "superseded": true
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "invalid",
+          "value": {
+            "type": "token",
+            "value": "false"
+          }
+        },
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        }
+      ],
+      "parentId": "272",
+      "childIds": [
+        "520",
+        "521",
+        "524"
+      ],
+      "backendDOMNodeId": 527
+    },
+    {
+      "nodeId": "535",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "button"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 9
+      },
+      "name": {
+        "type": "computedString",
+        "value": "주간 리포트 확인 상세 보기",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "type": "computedString",
+              "value": "주간 리포트 확인 상세 보기"
+            },
+            "attribute": "aria-label",
+            "attributeValue": {
+              "type": "string",
+              "value": "주간 리포트 확인 상세 보기"
+            }
+          },
+          {
+            "type": "relatedElement",
+            "superseded": true,
+            "nativeSource": "label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토 필요 주간 리포트 확인 팀 운영 오늘 18:00 담당 지우"
+            },
+            "superseded": true
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "invalid",
+          "value": {
+            "type": "token",
+            "value": "false"
+          }
+        },
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        }
+      ],
+      "parentId": "272",
+      "childIds": [
+        "528",
+        "529",
+        "532"
+      ],
+      "backendDOMNodeId": 535
+    },
+    {
+      "nodeId": "-1000000213",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "비교할 질문"
+      },
+      "properties": [],
+      "parentId": "372",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000181",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘의 작업"
+      },
+      "properties": [],
+      "parentId": "326",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000182",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "같은 다섯 가지 작업, 세 가지 보기."
+      },
+      "properties": [],
+      "parentId": "327",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000183",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "\n"
+      },
+      "properties": [],
+      "parentId": "252",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000184",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토할 일을 찾고 작업을 눌러 내용을 확인해 보세요."
+      },
+      "properties": [],
+      "parentId": "328",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000185",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "10월 28일"
+      },
+      "properties": [],
+      "parentId": "329",
+      "childIds": []
+    },
+    {
+      "nodeId": "331",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "A · 목록",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "A · 목록"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "256",
+      "childIds": [
+        "-1000000187"
+      ],
+      "backendDOMNodeId": 331
+    },
+    {
+      "nodeId": "-1000000188",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "한 줄에서 나란히"
+      },
+      "properties": [],
+      "parentId": "332",
+      "childIds": []
+    },
+    {
+      "nodeId": "333",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "B · 카드",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "B · 카드"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "259",
+      "childIds": [
+        "-1000000189"
+      ],
+      "backendDOMNodeId": 333
+    },
+    {
+      "nodeId": "-1000000190",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "하나씩 둘러보기"
+      },
+      "properties": [],
+      "parentId": "334",
+      "childIds": []
+    },
+    {
+      "nodeId": "335",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "C · 상태 보드",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "C · 상태 보드"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "262",
+      "childIds": [
+        "-1000000191"
+      ],
+      "backendDOMNodeId": 335
+    },
+    {
+      "nodeId": "-1000000192",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "상태별로 모아 보기"
+      },
+      "properties": [],
+      "parentId": "336",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000314",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "작업 카드"
+      },
+      "properties": [],
+      "parentId": "536",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000315",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "작업마다 같은 크기의 공간을 두어 내용을 살펴봅니다."
+      },
+      "properties": [],
+      "parentId": "537",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000316",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "2개 작업 표시"
+      },
+      "properties": [],
+      "parentId": "538",
+      "childIds": []
+    },
+    {
+      "nodeId": "340",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "전체 5",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "전체 5"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "238",
+      "childIds": [
+        "-1000000317"
+      ],
+      "backendDOMNodeId": 340
+    },
+    {
+      "nodeId": "341",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요 2",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토 필요 2"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "270",
+      "childIds": [
+        "-1000000318"
+      ],
+      "backendDOMNodeId": 341
+    },
+    {
+      "nodeId": "-1000000198",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "작업을 누르면 상세 내용이 열립니다"
+      },
+      "properties": [],
+      "parentId": "342",
+      "childIds": []
+    },
+    {
+      "nodeId": "520",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "527",
+      "childIds": [
+        "539"
+      ],
+      "backendDOMNodeId": 520
+    },
+    {
+      "nodeId": "539",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토 필요"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "520",
+      "childIds": [
+        "-1000000319"
+      ],
+      "backendDOMNodeId": 539
+    },
+    {
+      "nodeId": "521",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "527",
+      "childIds": [
+        "522",
+        "523"
+      ],
+      "backendDOMNodeId": 521
+    },
+    {
+      "nodeId": "522",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "521",
+      "childIds": [
+        "540"
+      ],
+      "backendDOMNodeId": 522
+    },
+    {
+      "nodeId": "540",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "랜딩 페이지 문구 검토",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "랜딩 페이지 문구 검토"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "522",
+      "childIds": [
+        "-1000000320"
+      ],
+      "backendDOMNodeId": 540
+    },
+    {
+      "nodeId": "523",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "521",
+      "childIds": [
+        "541"
+      ],
+      "backendDOMNodeId": 523
+    },
+    {
+      "nodeId": "541",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "웹사이트 리뉴얼",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "웹사이트 리뉴얼"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "523",
+      "childIds": [
+        "-1000000321"
+      ],
+      "backendDOMNodeId": 541
+    },
+    {
+      "nodeId": "524",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "527",
+      "childIds": [
+        "525",
+        "526"
+      ],
+      "backendDOMNodeId": 524
+    },
+    {
+      "nodeId": "525",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "524",
+      "childIds": [
+        "542"
+      ],
+      "backendDOMNodeId": 525
+    },
+    {
+      "nodeId": "542",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘 14:00",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "오늘 14:00"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "525",
+      "childIds": [
+        "-1000000322"
+      ],
+      "backendDOMNodeId": 542
+    },
+    {
+      "nodeId": "526",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "generic"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 88
+      },
+      "name": {
+        "type": "computedString",
+        "value": "담당 서연",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "type": "computedString",
+              "value": "담당 서연"
+            },
+            "attribute": "aria-label",
+            "attributeValue": {
+              "type": "string",
+              "value": "담당 서연"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "524",
+      "childIds": [
+        "543"
+      ],
+      "backendDOMNodeId": 526
+    },
+    {
+      "nodeId": "528",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "535",
+      "childIds": [
+        "544"
+      ],
+      "backendDOMNodeId": 528
+    },
+    {
+      "nodeId": "544",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토 필요"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "528",
+      "childIds": [
+        "-1000000324"
+      ],
+      "backendDOMNodeId": 544
+    },
+    {
+      "nodeId": "529",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "535",
+      "childIds": [
+        "530",
+        "531"
+      ],
+      "backendDOMNodeId": 529
+    },
+    {
+      "nodeId": "530",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "529",
+      "childIds": [
+        "545"
+      ],
+      "backendDOMNodeId": 530
+    },
+    {
+      "nodeId": "545",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "주간 리포트 확인",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "주간 리포트 확인"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "530",
+      "childIds": [
+        "-1000000325"
+      ],
+      "backendDOMNodeId": 545
+    },
+    {
+      "nodeId": "531",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "529",
+      "childIds": [
+        "546"
+      ],
+      "backendDOMNodeId": 531
+    },
+    {
+      "nodeId": "546",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "팀 운영",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "팀 운영"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "531",
+      "childIds": [
+        "-1000000326"
+      ],
+      "backendDOMNodeId": 546
+    },
+    {
+      "nodeId": "532",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "535",
+      "childIds": [
+        "533",
+        "534"
+      ],
+      "backendDOMNodeId": 532
+    },
+    {
+      "nodeId": "533",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "532",
+      "childIds": [
+        "547"
+      ],
+      "backendDOMNodeId": 533
+    },
+    {
+      "nodeId": "547",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘 18:00",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "오늘 18:00"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "533",
+      "childIds": [
+        "-1000000327"
+      ],
+      "backendDOMNodeId": 547
+    },
+    {
+      "nodeId": "534",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "generic"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 88
+      },
+      "name": {
+        "type": "computedString",
+        "value": "담당 지우",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "type": "computedString",
+              "value": "담당 지우"
+            },
+            "attribute": "aria-label",
+            "attributeValue": {
+              "type": "string",
+              "value": "담당 지우"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "532",
+      "childIds": [
+        "548"
+      ],
+      "backendDOMNodeId": 534
+    },
+    {
+      "nodeId": "-1000000187",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "A · 목록"
+      },
+      "properties": [],
+      "parentId": "331",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000189",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "B · 카드"
+      },
+      "properties": [],
+      "parentId": "333",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000191",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "C · 상태 보드"
+      },
+      "properties": [],
+      "parentId": "335",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000317",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "전체 5"
+      },
+      "properties": [],
+      "parentId": "340",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000318",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요 2"
+      },
+      "properties": [],
+      "parentId": "341",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000319",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요"
+      },
+      "properties": [],
+      "parentId": "539",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000320",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "랜딩 페이지 문구 검토"
+      },
+      "properties": [],
+      "parentId": "540",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000321",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "웹사이트 리뉴얼"
+      },
+      "properties": [],
+      "parentId": "541",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000322",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘 14:00"
+      },
+      "properties": [],
+      "parentId": "542",
+      "childIds": []
+    },
+    {
+      "nodeId": "543",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "서연",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "서연"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "526",
+      "childIds": [
+        "-1000000323"
+      ],
+      "backendDOMNodeId": 543
+    },
+    {
+      "nodeId": "-1000000324",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요"
+      },
+      "properties": [],
+      "parentId": "544",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000325",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "주간 리포트 확인"
+      },
+      "properties": [],
+      "parentId": "545",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000326",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "팀 운영"
+      },
+      "properties": [],
+      "parentId": "546",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000327",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘 18:00"
+      },
+      "properties": [],
+      "parentId": "547",
+      "childIds": []
+    },
+    {
+      "nodeId": "548",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "지우",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "지우"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "534",
+      "childIds": [
+        "-1000000328"
+      ],
+      "backendDOMNodeId": 548
+    },
+    {
+      "nodeId": "-1000000323",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "서연"
+      },
+      "properties": [],
+      "parentId": "543",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000328",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "지우"
+      },
+      "properties": [],
+      "parentId": "548",
+      "childIds": []
+    }
+  ]
+}

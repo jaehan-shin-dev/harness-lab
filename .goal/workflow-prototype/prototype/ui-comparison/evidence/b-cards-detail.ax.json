@@ -1,0 +1,920 @@
+{
+  "nodes": [
+    {
+      "nodeId": "235",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "RootWebArea"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 144
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘의 작업 · 세 가지 보기",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label",
+            "superseded": true
+          },
+          {
+            "type": "relatedElement",
+            "value": {
+              "type": "computedString",
+              "value": "오늘의 작업 · 세 가지 보기"
+            },
+            "nativeSource": "title"
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "focused",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "url",
+          "value": {
+            "type": "string",
+            "value": "http://127.0.0.1:56130/"
+          }
+        }
+      ],
+      "childIds": [
+        "239"
+      ],
+      "backendDOMNodeId": 235,
+      "frameId": "5819D5D23F08DFDE979C6EC40778C442"
+    },
+    {
+      "nodeId": "239",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "activeModalDialog",
+          "value": {
+            "type": "idref",
+            "relatedNodes": [
+              {
+                "backendDOMNodeId": 317,
+                "idref": "detail"
+              }
+            ]
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "235",
+      "childIds": [
+        "317"
+      ],
+      "backendDOMNodeId": 239
+    },
+    {
+      "nodeId": "317",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "dialog"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 35
+      },
+      "name": {
+        "type": "computedString",
+        "value": "랜딩 페이지 문구 검토",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "value": {
+              "type": "computedString",
+              "value": "랜딩 페이지 문구 검토"
+            },
+            "attribute": "aria-labelledby",
+            "attributeValue": {
+              "type": "idrefList",
+              "value": "detail-title",
+              "relatedNodes": [
+                {
+                  "backendDOMNodeId": 319,
+                  "idref": "detail-title",
+                  "text": "랜딩 페이지 문구 검토"
+                }
+              ]
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label",
+            "superseded": true
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "modal",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        },
+        {
+          "name": "labelledby",
+          "value": {
+            "type": "nodeList",
+            "relatedNodes": [
+              {
+                "backendDOMNodeId": 319,
+                "idref": "detail-title",
+                "text": "랜딩 페이지 문구 검토"
+              }
+            ]
+          }
+        }
+      ],
+      "parentId": "239",
+      "childIds": [
+        "375",
+        "319",
+        "320",
+        "321",
+        "322",
+        "323"
+      ],
+      "backendDOMNodeId": 317
+    },
+    {
+      "nodeId": "375",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "TASK DETAIL",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "TASK DETAIL"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "317",
+      "childIds": [
+        "-1000000338"
+      ],
+      "backendDOMNodeId": 375
+    },
+    {
+      "nodeId": "319",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "heading"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 96
+      },
+      "name": {
+        "type": "computedString",
+        "value": "랜딩 페이지 문구 검토",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "랜딩 페이지 문구 검토"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "level",
+          "value": {
+            "type": "integer",
+            "value": 2
+          }
+        }
+      ],
+      "parentId": "317",
+      "childIds": [
+        "553"
+      ],
+      "backendDOMNodeId": 319
+    },
+    {
+      "nodeId": "320",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "generic"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 88
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "317",
+      "childIds": [
+        "554"
+      ],
+      "backendDOMNodeId": 320
+    },
+    {
+      "nodeId": "321",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "paragraph"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 133
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "317",
+      "childIds": [
+        "555"
+      ],
+      "backendDOMNodeId": 321
+    },
+    {
+      "nodeId": "322",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "generic"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 88
+      },
+      "name": {
+        "type": "computedString",
+        "value": "",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "317",
+      "childIds": [
+        "549",
+        "550",
+        "551"
+      ],
+      "backendDOMNodeId": 322
+    },
+    {
+      "nodeId": "323",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "button"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 9
+      },
+      "name": {
+        "type": "computedString",
+        "value": "닫기",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "attribute": "aria-label"
+          },
+          {
+            "type": "relatedElement",
+            "nativeSource": "label"
+          },
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "닫기"
+            }
+          },
+          {
+            "type": "attribute",
+            "attribute": "title",
+            "superseded": true
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "invalid",
+          "value": {
+            "type": "token",
+            "value": "false"
+          }
+        },
+        {
+          "name": "focusable",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        },
+        {
+          "name": "focused",
+          "value": {
+            "type": "booleanOrUndefined",
+            "value": true
+          }
+        }
+      ],
+      "parentId": "317",
+      "childIds": [
+        "376"
+      ],
+      "backendDOMNodeId": 323
+    },
+    {
+      "nodeId": "-1000000338",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "TASK DETAIL"
+      },
+      "properties": [],
+      "parentId": "375",
+      "childIds": []
+    },
+    {
+      "nodeId": "553",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "랜딩 페이지 문구 검토",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "랜딩 페이지 문구 검토"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "319",
+      "childIds": [
+        "-1000000339"
+      ],
+      "backendDOMNodeId": 553
+    },
+    {
+      "nodeId": "554",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "웹사이트 리뉴얼",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "웹사이트 리뉴얼"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "320",
+      "childIds": [
+        "-1000000340"
+      ],
+      "backendDOMNodeId": 554
+    },
+    {
+      "nodeId": "555",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "첫 화면 제목과 가입 안내 문구를 읽고, 수정할 부분을 코멘트로 남겨 주세요.",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "첫 화면 제목과 가입 안내 문구를 읽고, 수정할 부분을 코멘트로 남겨 주세요."
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "321",
+      "childIds": [
+        "-1000000341",
+        "-1000000342"
+      ],
+      "backendDOMNodeId": 555
+    },
+    {
+      "nodeId": "549",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "322",
+      "childIds": [
+        "556"
+      ],
+      "backendDOMNodeId": 549
+    },
+    {
+      "nodeId": "556",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "검토 필요"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "549",
+      "childIds": [
+        "-1000000343"
+      ],
+      "backendDOMNodeId": 556
+    },
+    {
+      "nodeId": "550",
+      "ignored": true,
+      "ignoredReasons": [
+        {
+          "name": "uninteresting",
+          "value": {
+            "type": "boolean",
+            "value": true
+          }
+        }
+      ],
+      "role": {
+        "type": "role",
+        "value": "none"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 0
+      },
+      "parentId": "322",
+      "childIds": [
+        "557"
+      ],
+      "backendDOMNodeId": 550
+    },
+    {
+      "nodeId": "557",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘 14:00",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "오늘 14:00"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "550",
+      "childIds": [
+        "-1000000344"
+      ],
+      "backendDOMNodeId": 557
+    },
+    {
+      "nodeId": "551",
+      "ignored": false,
+      "role": {
+        "type": "role",
+        "value": "generic"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 88
+      },
+      "name": {
+        "type": "computedString",
+        "value": "담당 서연",
+        "sources": [
+          {
+            "type": "relatedElement",
+            "attribute": "aria-labelledby"
+          },
+          {
+            "type": "attribute",
+            "value": {
+              "type": "computedString",
+              "value": "담당 서연"
+            },
+            "attribute": "aria-label",
+            "attributeValue": {
+              "type": "string",
+              "value": "담당 서연"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "322",
+      "childIds": [
+        "558"
+      ],
+      "backendDOMNodeId": 551
+    },
+    {
+      "nodeId": "376",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "닫기",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "닫기"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "323",
+      "childIds": [
+        "-1000000346"
+      ],
+      "backendDOMNodeId": 376
+    },
+    {
+      "nodeId": "-1000000339",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "랜딩 페이지 문구 검토"
+      },
+      "properties": [],
+      "parentId": "553",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000340",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "웹사이트 리뉴얼"
+      },
+      "properties": [],
+      "parentId": "554",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000341",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "첫 화면 제목과 가입 안내 문구를 읽고, 수정할 부분을 코멘트로 남겨 주세"
+      },
+      "properties": [],
+      "parentId": "555",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000342",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "요."
+      },
+      "properties": [],
+      "parentId": "555",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000343",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "검토 필요"
+      },
+      "properties": [],
+      "parentId": "556",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000344",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "오늘 14:00"
+      },
+      "properties": [],
+      "parentId": "557",
+      "childIds": []
+    },
+    {
+      "nodeId": "558",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "StaticText"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 158
+      },
+      "name": {
+        "type": "computedString",
+        "value": "서연",
+        "sources": [
+          {
+            "type": "contents",
+            "value": {
+              "type": "computedString",
+              "value": "서연"
+            }
+          }
+        ]
+      },
+      "properties": [],
+      "parentId": "551",
+      "childIds": [
+        "-1000000345"
+      ],
+      "backendDOMNodeId": 558
+    },
+    {
+      "nodeId": "-1000000346",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "닫기"
+      },
+      "properties": [],
+      "parentId": "376",
+      "childIds": []
+    },
+    {
+      "nodeId": "-1000000345",
+      "ignored": false,
+      "role": {
+        "type": "internalRole",
+        "value": "InlineTextBox"
+      },
+      "chromeRole": {
+        "type": "internalRole",
+        "value": 101
+      },
+      "name": {
+        "type": "computedString",
+        "value": "서연"
+      },
+      "properties": [],
+      "parentId": "558",
+      "childIds": []
+    }
+  ]
+}
