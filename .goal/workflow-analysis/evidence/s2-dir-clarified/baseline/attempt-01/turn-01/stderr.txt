@@ -1,1 +1,0 @@
-Warning: No project session found with id '74945e62-da0a-4d79-94aa-9ac21e9c4703'; creating a new session with that id.

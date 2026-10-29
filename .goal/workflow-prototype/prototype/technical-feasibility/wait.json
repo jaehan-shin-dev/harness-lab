@@ -1,5 +1,0 @@
-{
-  "resource": "room-1",
-  "holder": {"owner": "A", "hold_ms": 700},
-  "contender": {"owner": "B", "timeout_ms": 2000}
-}

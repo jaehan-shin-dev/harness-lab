@@ -1,3 +1,0 @@
-Warning: No project session found with id '3c2c2bf2-a5b4-4aa3-8abf-2fa9799d1b4b'; creating a new session with that id.
-Warning: Invalid settings file /Users/sinjaehan/.pi/agent/settings.json: EPERM: operation not permitted, mkdir '/Users/sinjaehan/.pi/agent/settings.json.lock'
-Credential store read failed for openai-codex: EPERM: operation not permitted, mkdir '/Users/sinjaehan/.pi/agent/auth.json.lock'
