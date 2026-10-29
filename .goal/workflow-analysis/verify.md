@@ -1,89 +1,93 @@
-# workflow-analysis Verify
+# workflow-analysis Verify — 저장 위치 안내 변경 후 재판정
 
-- 검증일: 2026-10-29.
-- 기준: [goal.md](goal.md)의 Evaluation 전체. Plan 종료 commit `9302dc3`, 검증 대상 HEAD `784978f`.
-- 전체 판정: **목표 미달성 — FAIL**.
-- 항목 판정: **PASS 11개, FAIL 1개(R6), UNKNOWN 0개**.
+- 판정일: 2026-10-29.
+- 판정 대상: Execute 완료 커밋 `a59b8b9`의 D1~D3와 [goal.md](goal.md)의 Evaluation 전체.
+- 판정자: 구현을 맡지 않은 독립 판정 subagent `/root/verify_directory_followup`.
+- 결과: **PASS — 현재 비교 조건에서 R1~R6·C1~C6 모두 PASS.** 필수 항목의 FAIL·UNKNOWN은 남지 않았다.
+- 재판정 조건: 최초 S2의 경로 실패 뒤, 저장 위치 안내를 명확히 한 별도 동일 입력 비교를 추가했다. 이 PASS는 새 안내를 포함한 현재 조건의 충족을 뜻한다. 최초 S2 응답을 PASS로 바꾸거나 스킬 자체의 경로 처리 능력이 개선되었다는 뜻은 아니다.
 
-확정한 스킬 문구는 정확히 적용됐고, 세 사례의 실제 비교 증거도 확보됐다. S1에서 수정본이 후속 사용자 반응을 분석 문서에 반영한 차이를 확인했다. 그러나 S2 수정본은 정해진 기록 위치에 문서를 만들지 않았다. S1의 R6 충족만으로 이 반대 증거를 제외할 수 없으므로, 모든 필수 R/C를 충족해야 한다는 목표 달성 조건을 만족하지 않는다.
+## 판정 방식과 입력 경계
 
-## 판정 방식과 입력 제한
+이번 판정은 다음 입력만 사용했다.
 
-판정은 실행을 담당하지 않은 독립 subagent `/root/verify_workflow_analysis`가 수행했다. main이 전달한 입력은 다음으로 제한됐다.
+1. [goal.md](goal.md) 전체와 D1의 정확한 수용 문구를 정한 [change-proposal.md](change-proposal.md).
+2. D1 [workflow-analysis/SKILL.md](../../.agents/skills/workflow-analysis/SKILL.md) 전체.
+3. D2 [analysis.md](analysis.md), [analysis.html](analysis.html). 예시 보존과 내용·변경 여부를 확인했고, 링크된 다른 스킬·분석 문서로 이동하지 않았다.
+4. D3 `evidence/`의 공통 protocol·manifest·환경·스킬 스냅샷·고정 발화·S3 자료, 모든 기존 시도의 실행 기록·stdout/stderr·세션·파일 목록과 스냅샷, 전사본·비교표·문구 검토표. 후속 `s2-dir-clarified/`도 같은 종류의 실제 기록을 확인했다.
+5. 최초 Plan 끝 `9302dc3` 이후 `a59b8b9`까지의 Git 기록. 후속 입력 고정은 `2ed417b`, 담당자 조정은 `969e5c0`이다. diff/show에서 tickets와 기존 verify.md 본문을 제외했다.
 
-- `goal.md` 전체와 D1의 확정 문구인 [change-proposal.md](change-proposal.md).
-- D1 `.agents/skills/workflow-analysis/SKILL.md`, D2 기존 `analysis.md`·`analysis.html`, D3 `evidence/`의 입력·스킬 스냅샷·원본 응답·실행 기록·세션·작업 폴더 스냅샷·비교 문서.
-- `9302dc3..HEAD`의 git 기록. diff/show에서 ticket 내용은 제외했다. Plan 종료 시점의 D1·D2 내용은 이 범위 diff의 기준 상태로만 대조했다.
+**`tickets/`·`handoff.md`·기존 verify.md의 본문, 이전 main 대화와 구현자 완료 보고는 읽거나 판정에 재사용하지 않았다.** 비교표와 meta의 PASS·연결 확인·해시 일치 주장은 증거가 필요한 주장으로 취급했다. 표에 있는 티켓 링크는 따라가지 않았다. 기존 verify.md는 재작성 전부터 `a59b8b9`에 추적되어 있으므로 이전 보고서가 Git 이력에 보존된다.
 
-`tickets/`, `handoff.md`, 이전 main 대화, 실행 에이전트의 완료 보고는 읽지 않았다. 증거 문서의 ticket 링크도 따라가지 않았다. 실행 담당자에게 결론을 묻지 않았고, Aside·브라우저·새 모델 대화·재실행은 사용하지 않았다.
+원본 세션의 사용자 발화·system sections·실제 모델·도구 호출과 성공 결과를 직접 읽었다. 원본 write/edit의 내용을 읽기 전용으로 재구성해 응답 직후 스냅샷과 비교하고 파일 해시도 다시 계산했다. 새 모델 호출·브라우저·Aside·실험 입력 또는 스킬 변경은 하지 않았다. 이번 단계에서 작성한 파일은 이 verify.md뿐이다.
 
-`text-review.md`, `comparison.md`, `meta.json`의 PASS와 확인 완료 표시는 검증할 주장으로 취급했다. 원본 JSONL의 메시지·도구 호출과 결과, 세션의 사용자 메시지와 연결, 실제 파일 내용, 해시, git 변경 범위로 대조했다. 이 문서만 새로 작성했으며 스킬·입력·실행 결과는 수정하지 않았다.
+## D1~D3와 변경 범위
 
-## 증거 위치 표기
+| 산출물 | 판정 | 직접 확인한 근거 |
+|---|---|---|
+| D1 | PASS | 현재 스킬은 change-proposal.md의 `교체할 파일 전체 확정 문구`와 마지막 개행까지 바이트 단위로 같다. SHA-256은 `4ffed4e4d6b11680be29b464ace3bc14975e5e1626b53e1b87b2ee2ce4aead31`. 이름 유지, description 포함 32줄 전체가 확정안과 일치한다. baseline 스냅샷도 `9302dc3`의 원문과 같다. |
+| D2 | PASS | analysis.md와 analysis.html은 `9302dc3` 대비 각각 바이트 단위로 변경이 없다. 여섯 제안의 대화 예시가 남아 있고 가상 예시라는 표시도 유지한다. D1은 이 문서들을 읽도록 요구하지 않는다. HTML의 추가 디자인 변경도 없다. |
+| D3 | PASS | 기존 S1~S3 및 별도 후속 S2의 고정 입력·버전·실행 환경·원본 응답·조사·세션·스냅샷·항목별 비교가 보존되어 있다. 기존 실행 오류·기록 경로 실패도 지워지지 않았다. 아래 원본 감사와 R/C 표가 최종 판정 근거다. |
 
-아래 약어의 기준 경로는 이 문서와 같은 폴더다. `T1`, `T2`는 각각 `turn-01/stdout.jsonl`, `turn-02/stdout.jsonl`이다. `L`은 해당 원본 JSONL의 1부터 시작하는 행 번호다.
+`9302dc3..a59b8b9`의 tickets·verify.md·handoff.md 제외 변경 파일은 D1과 `evidence/`뿐이다. 다른 스킬·AGENTS.md·skill-eval·새 평가 프로그램은 변경하지 않았다. `784978f..a59b8b9`에서 D1과 기존 shared·S1·S2·S3의 diff는 비어 있으며, 후속 shared도 `2ed417b` 이후 그대로다.
 
-| 약어 | 경로 |
+## 비교 유효성 감사
+
+- **사전 고정:** 기존 입력·스킬·protocol·manifest는 `88ef439`(2026-10-29 05:55:58 UTC)에 남아 있으며 첫 모델 실행보다 앞선다. goal.md의 세 상황과 R/C 성공 조건도 실행 이전에 확정되어 있다. 후속 입력·protocol은 `2ed417b`(07:41:52 UTC)에 고정됐고 새 실행은 08:00:44 UTC부터다. 제외한 티켓에만 있는 추가 조건은 판정 입력으로 사용하지 않았다.
+- **입력·버전:** shared manifest의 모든 파일 및 후속 manifest의 입력·참조 해시를 재계산해 일치를 확인했다. 각 유효 대화의 argv와 원본 세션에 있는 사용자 발화 두 개는 해당 고정 파일과 정확히 같다. 각 system addendum은 해당 baseline 또는 revised 스킬 전체에 공통 `<addendum>` 래퍼만 더한 내용이다.
+- **모델·도구·컨텍스트:** 기존 여섯 대화와 후속 두 대화의 argv·model_change·thinking 기록·실제 assistant 모델은 `openai-codex / gpt-6-sol / medium`과 일치한다. `read,bash,edit,write`, `--no-context-files`, `--no-skills`, `--no-extensions`, `--no-mcp`가 공통이다. 모든 세션의 preamble·tools·rules·docs 섹션 해시도 같고 addendum·cwd만 실행별로 다르다. pi 버전은 공통 환경/meta에 1.3.0으로 기록되어 있다. 이 증거로 서버 내부의 고정 모델 스냅샷이나 실행 바이너리의 해시까지 확인한 것은 아니다.
+- **분리·연결:** 유효한 대화 여덟 개는 모두 다른 UUID와 cwd에서 시작한다. S1·S2·후속 S2의 첫 bash 결과는 빈 cwd를, S3는 고정 자료 두 개만 보여 준다. 각 세션의 사용자 메시지는 두 개이며 parentId 연결이 끊기지 않는다. 도구 호출은 자기 cwd 조사·제공 자료 조회·분석 기록 작성/갱신뿐이고 다른 버전의 응답·티켓·goal·비교표를 읽은 기록은 없다.
+- **실제 종료·파일:** 유효한 16개 호출은 모두 종료 코드 0·시간 초과 없음·`agent_settled`와 `aborted:false`를 남겼다. raw write/edit를 재구성한 파일 내용은 16개 응답 직후 스냅샷 모두와 같고 files.json의 해시도 일치했다. 원본 도구 성공 결과로 후보가 문서를 생성·갱신했음을 확인했다. 기존 S2의 잘못된 경로도 그대로 재현된다.
+- **실패 시도:** 기존 S2 revised attempt-01과 S3 baseline attempt-01은 stderr에 설정/인증 lock 생성 EPERM, stdout에는 세션 시작만 있고 assistant 응답이 없다. 기존 S1 baseline attempt-01은 stdout/stderr가 비어 있고 실행 기록에 중단·종료 코드 미확정·argv 복원이라는 제한이 명시되어 있다. 이 S1 중단의 인증 원인은 raw 출력만으로 독립 확인할 수 없지만 성공 응답으로 세지 않았다. 새 세션에서 완료된 시도만 행동 비교에 사용했고 이전 기록을 보존했다.
+- **부분 도구 오류:** S3 baseline의 첫 bash는 존재하지 않는 `.goal` 검색으로 코드 1을 냈지만, 별도 정책·CSV read는 둘 다 성공했다. 이후 write/edit와 두 응답도 정상 완료되어 R4의 자료 접근 실패로 보지 않는다.
+
+주요 대화의 원본은 다음과 같다. 아래 평가표의 약칭은 이 파일을 가리키며 L은 1-based JSONL 행 번호다.
+
+| 약칭 | 원본 |
 |---|---|
-| S1B | `evidence/s1/baseline/attempt-02/` |
-| S1R | `evidence/s1/revised/attempt-01/` |
-| S2B | `evidence/s2/baseline/attempt-01/` |
-| S2R | `evidence/s2/revised/attempt-02/` |
-| S3B | `evidence/s3/baseline/attempt-02/` |
-| S3R | `evidence/s3/revised/attempt-01/` |
-| SKILL | [실제 개선본](../../.agents/skills/workflow-analysis/SKILL.md) |
+| S1-B1 / S1-B2 | [기존본 첫째](evidence/s1/baseline/attempt-02/turn-01/stdout.jsonl) / [둘째](evidence/s1/baseline/attempt-02/turn-02/stdout.jsonl) |
+| S1-R1 / S1-R2 | [수정본 첫째](evidence/s1/revised/attempt-01/turn-01/stdout.jsonl) / [둘째](evidence/s1/revised/attempt-01/turn-02/stdout.jsonl) |
+| S2-old-B1 / S2-old-B2 | [최초 기존본 첫째](evidence/s2/baseline/attempt-01/turn-01/stdout.jsonl) / [둘째](evidence/s2/baseline/attempt-01/turn-02/stdout.jsonl) |
+| S2-old-R1 / S2-old-R2 | [최초 수정본 첫째](evidence/s2/revised/attempt-02/turn-01/stdout.jsonl) / [둘째](evidence/s2/revised/attempt-02/turn-02/stdout.jsonl) |
+| S2-new-B1 / S2-new-B2 | [새 기존본 첫째](evidence/s2-dir-clarified/baseline/attempt-01/turn-01/stdout.jsonl) / [둘째](evidence/s2-dir-clarified/baseline/attempt-01/turn-02/stdout.jsonl) |
+| S2-new-R1 / S2-new-R2 | [새 수정본 첫째](evidence/s2-dir-clarified/revised/attempt-01/turn-01/stdout.jsonl) / [둘째](evidence/s2-dir-clarified/revised/attempt-01/turn-02/stdout.jsonl) |
+| S3-B1 / S3-B2 | [기존본 첫째](evidence/s3/baseline/attempt-02/turn-01/stdout.jsonl) / [둘째](evidence/s3/baseline/attempt-02/turn-02/stdout.jsonl) |
+| S3-R1 / S3-R2 | [수정본 첫째](evidence/s3/revised/attempt-01/turn-01/stdout.jsonl) / [둘째](evidence/s3/revised/attempt-01/turn-02/stdout.jsonl) |
 
-## 비교 증거의 유효성
+## Evaluation 전체 판정
 
-**세 쌍 모두 행동 비교에 사용할 수 있다.** 다음은 비교 문서의 자기 보고를 원본으로 대조한 결과다. S2의 기록 위치 미충족은 실행 증거의 유실이나 비교 불능이 아니라, 관찰된 행동의 미충족이다.
+아래 PASS는 확정 문구와 현재 유효 비교 증거를 함께 대조한 결과다. 실제 대화 확인이 지정되지 않은 R5·C1·C2·C5도 문구 전체로 판정했다.
 
-1. **입력·조건의 사전 고정.** `88ef439`는 2026-10-29 14:55:58 KST에 공통 입력·프로토콜·스킬 스냅샷·manifest를 추가했다. 이 shared 폴더의 후속 변경은 없다. 성공 실행의 첫 호출 시각은 15:04:02 이후다. 각 사례의 두 버전에서 `execution.json`의 실제 argv 입력과 원본 세션의 사용자 발화 두 개가 `shared/cases/sN/turn-01.txt`·`turn-02.txt`와 정확히 같다. 사전에 존재한 goal Evaluation을 판정 기준으로 사용했으며, 응답에 맞춘 추가 힌트나 발화 변경은 발견하지 않았다.
-2. **스킬 버전.** baseline 스냅샷은 Plan 종료 시점 스킬과 같고 SHA-256은 `fe625a9044521877905576a23de557027e061c1e04d4572f6cb3b21dea9efe75`다. 수정본 스냅샷·실제 스킬·Q4 전체 확정 문구는 바이트 단위로 같고 SHA-256은 `4ffed4e4d6b11680be29b464ace3bc14975e5e1626b53e1b87b2ee2ce4aead31`다. 여섯 대화 모두 T1 L5의 system addendum에서 해당 전체 문구가 동일한 `<addendum>` 포장으로 실제 주입됐음을 확인했다. manifest의 모든 파일 해시도 재계산 결과와 같다.
-3. **모델·도구·공통 문맥.** 성공한 12개 호출의 실제 assistant 메시지는 모두 provider `openai-codex`, model `gpt-6-sol`이다. 여섯 원본 세션 L2~3은 같은 모델과 `thinkingLevel: medium`을 기록한다. argv에는 공통 실행 파일 `/opt/homebrew/bin/pi`, `--no-context-files`, `--no-skills`, `--no-extensions`, `--no-mcp`, 도구 `read,bash,edit,write`가 있다. T1 L5의 공통 system sections 중 preamble·tools·rules·docs는 여섯 대화에서 같고 addendum과 cwd만 달랐다. 도구 원본에는 비교 자료·ticket·다른 버전의 응답 조회가 없다.
-4. **독립 시작과 세션 연속성.** 여섯 대화는 서로 다른 UUID·cwd를 썼다. S1·S2의 첫 bash 결과는 빈 초기 폴더를 보여 준다(S1 양쪽 T1 L46, S2 양쪽 T1 L61). S3의 첫 bash 결과는 data 두 파일만 보여 주며(양쪽 T1 L31), read 성공 결과의 내용은 고정 자료와 정확히 같다(L27~28). 각 원본 세션에는 같은 두 발화가 한 parent 연결 안에서 이어진다. 사용자 메시지 행은 S1 양쪽·S2R L5/L11, S2B·S3 양쪽 L5/L13이다.
-5. **실제 도구 결과와 파일.** 성공 호출 12개 모두 종료 코드 0·시간 초과 없음과 원본 `agent_settled`를 확인했다. 세션의 assistant 메시지는 stdout 원본 메시지와 같다. 각 응답 후 파일 해시는 `files.json`과 일치한다. 성공한 write/edit의 원본 인수를 순서대로 메모리에서 적용해 재구성한 파일 내용도 12개 작업 폴더 스냅샷과 모두 일치한다. 실행자가 분석 문서를 대신 작성한 흔적은 없다.
-6. **실패 시도 보존.** S2R attempt-01 및 S3B attempt-01은 원본 stderr에 settings/auth lock 생성 `EPERM`이 있고 모델 응답 없이 종료됐다. S1B attempt-01의 stdout/stderr는 모두 0바이트이며 중단·복원한 argv라는 표시가 남아 있다. 이 세 시도는 성공 응답의 근거로 사용하지 않았다. 각 해당 대화의 새 세션 재시도만 비교에 사용했고, 응답 품질 실패를 숨긴 재시도는 발견하지 않았다. S3B T1 L31의 없는 `.goal` 탐색 오류는 실제 자료 read와 후속 write의 성공과 구별했다.
-
-pi 버전 `1.3.0`은 environment/meta에 기록돼 있으나 별도 `--version` 원본 출력은 보존돼 있지 않다. 정확한 설치 버전 번호의 독립 확인에는 이 제한이 있다. 비교에 필요한 실행 경로·실제 공통 시스템 문맥·모델·thinking·도구의 일치는 위 원본에서 확인했다. S1 첫 실패의 OAuth 만료라는 원인 설명도 빈 stdout/stderr만으로 독립 확인할 수 없으며, 그 설명을 성공 판정 근거로 사용하지 않았다.
-
-## Evaluation 항목별 판정
-
-| 항목 | 판정 | 기준과 대조한 구체적 증거 |
+| 항목 | 판정 | 문구 및 직접 증거·판단 |
 |---|---|---|
-| R1 | PASS | SKILL L8~9는 “이미 제공한 생각·정보·의문에서 출발”, L19는 불필요한 재질문 금지를 명시한다. S1R T1 L688은 이미 준 날짜·장소 공지, 긴 공지, 월별 간격을 활용해 설명하고, “공지 자체를 못 본 것인지”와 “필요한 순간에 정보를 찾기 어려운 것인지”를 구별한다. 기존 배경·목표를 다시 수집하지 않았고 목표 미정인 입력에서도 탐색했다. S1B T1 L768도 기존 정보를 활용해 이 기준을 충족했다. |
-| R2 | PASS | SKILL L17~19는 다섯 수단의 상황별 선택과 관점·전제·해석을 위한 질문을 허용한다. S1R T1 L688은 설명과 해석 구분 질문을, S2R T1 L918은 말투 예시와 변경 계기를 묻는 질문을, S3R T1 L24~28·L1021은 직접 자료 확인과 설명을 선택했다. 매번 모든 수단을 수행하거나 고정 질문을 이어 가지 않았다. |
-| R3 | PASS | SKILL L21~22는 재검토·근거에 따른 수정·변경 이유 설명을 지시한다. S2R T1 L918은 초기 요구 누락과 결과를 통한 선호 발견을 열어 두었다. 후속 사용자 발화 뒤 T2 L891은 “앞서 제가 ‘처음 요구의 누락’도 가능성으로 제시했지만, 새 정보를 보면 이 사례의 주된 설명으로 보기는 어렵습니다”라고 변화와 근거를 설명한다. “요구를 명확히 할 필요가 없다는 뜻도 아닙니다”라며 반대 극단도 거부한다. S2R T2 L667~668의 실제 edit와 최종 문서에도 이 판단이 반영됐다. S2B T2 L1431도 새 정보에 따른 구별과 근거를 설명했다. |
-| R4 | PASS | SKILL L24~26은 AI 조사, 사실·해석·가설 구분, 출처·한계·미확인을 명시한다. S3R T1 L24~28은 정책·CSV의 실제 read와 성공 결과다. T1 L1021은 4/6 준수, R04의 정확히 4시간 포함, R03·R04의 45/68시간을 정확히 설명한다. T2 L630은 “두 결론 모두 지금 자료로는 내릴 수 없습니다”라며 태만·기한 단축 효과를 확정하지 않는다. 최종 `S3R/turn-02/workspace/.goal/s3/analysis.md` L3~24는 출처와 계산, 경과 시간과 실제 대기의 차이, 없는 완료 기한·원인 자료를 구분한다. S3B도 같은 핵심 기준을 충족했다. |
-| R5 | PASS | SKILL L11~15는 Concept·Context·Problem을 유지하고 “필요에 따라 오가며 탐색하는 관점”으로 명시한다. L21~22에서 문제 해석도 새 근거에 따라 바뀐다. 원문 대비 diff에서 고정된 항목별 설명 완료 조건을 이 관점·재검토 규칙으로 바꾼 것을 확인했다. |
-| R6 | **FAIL** | 문구(SKILL L28~31)와 지정 사례 S1은 PASS다. S1R T2 L213~214의 edit는 사용자가 이해했다고 직접 말한 구분과 아직 모르는 효과만 추가했고, L291에서 자연스럽게 마쳤다. 최종 S1R 분석 L22~25도 이해·미확인 효과·미확정 목표를 구분한다. 그러나 S2R T1 L664~665의 write와 T2 L667~668의 edit는 **`s2/.goal/s2/analysis.md`**를 대상으로 했다. 프로토콜의 cwd 기준 기대 위치 **`.goal/s2/analysis.md`**에는 파일이 없다. `S2R/turn-02/files.json` L3~6은 실제 경로와 `analysis_exists: false`를 기록하며 스냅샷·원본 도구 인수도 이를 확인한다. 내용은 기록됐지만 정해진 결과 기록 위치를 충족하지 못한 실제 반대 증거다. S2 비교표의 담당 항목 밖이라는 이유로 이를 제외하지 않았다. |
-| C1 | PASS | description인 SKILL L3과 본문 L8~9의 목적은 사용자의 이해 발전으로 일치한다. 본문 전체의 질문·조사·수정·마무리 지시는 그 목적과 충돌하지 않는다. |
-| C2 | PASS | SKILL L15·L19·L30은 유연한 관점 이동, 질문 횟수·순서 비고정, 매번 확인·승인 불요를 명시한다. 전체 본문에 고정 인터뷰 순서나 수량 규칙이 없다. 실험의 두 발화는 프로토콜 조건이며 스킬 규칙에 추가되지 않았다. |
-| C3 | PASS | SKILL L32는 “목표와 범위의 확정은 Define에서 진행한다”고 명시한다. S1R T2 L291은 “목표나 해결책은 정하지 않겠습니다”라고 마치고, 최종 분석 L25도 원인·목표·해결책 미확정을 남긴다. S1의 응답·도구·파일에는 Define 실행이나 승인 요구가 없다. |
-| C4 | PASS | SKILL 전체에는 COFA 전용 용어·지식·절차 의존성이 없다. 고정 입력 `shared/cases/s1~s3/turn-01.txt`와 실제 원본 응답(S1R T1 L688, S2R T1 L918·T2 L891, S3R T1 L1021·T2 L630)은 각각 독서 모임, 문서 협업, 문의 처리라는 일반 사례만으로 설명했다. |
-| C5 | PASS | 실제 SKILL은 Q4의 전체 확정 문구와 마지막 개행까지 정확히 같은 32줄이다. 설명·질문 선택, 수정, 조사, 마무리에 필요한 짧은 행동 원칙으로 구성돼 있다. 대화 예시·긴 해설·기존 분석 문서 필수 읽기 지시는 없다. 분석 결과 출력 위치 외 외부 문서 의존성도 추가하지 않았다. git diff의 실제 제품 변경은 해당 스킬 하나다. |
-| C6 | PASS | `9302dc3..784978f`의 ticket 내용을 제외한 변경은 스킬과 증거 파일뿐이며 새 평가 프로그램·기존 skill-eval 확장이 없다. 여섯 성공 대화의 원본 JSONL·실제 도구 결과·원본 세션·작업 폴더를 대조해 실제 응답임을 확인했다. D2의 가상 대화를 실제 실행의 대체 증거로 사용하지 않았다. |
+| R1 | PASS | D1 L8~9·19는 이미 제공한 생각·정보·의문에서 시작하고 재질문을 피한다. S1-R1 L688은 긴 공지와 마감 직전 질문을 활용해 미열람과 검색 어려움을 구분한다. [첫 기록](evidence/s1/revised/attempt-01/turn-01/workspace/.goal/s1/analysis.md) L3~20에 8명·월 1회·혼합된 공지·메시지 부담을 활용하며 목표를 재수집하지 않는다. 첫 입력의 “아직 무엇을 목표로 정할지는 모르겠다”에도 바로 탐색했다. |
+| R2 | PASS | D1 L17~19는 다섯 수단의 선택과 관점·전제·해석 구분 질문을 허용한다. S1-R1 L688의 해석 구분 질문, S2-new-R1 L784의 기준 누락/선호 발견 설명과 시점 질문, S3-R1 L24~28의 실제 자료 조회와 L1021의 구간 설명은 상황에 맞는 선택이다. 모든 수단의 반복 실행·매 응답 질문은 없다. 최초 S2 수정본도 L918·둘째 L891에서 같은 핵심 행동을 보였다. |
+| R3 | PASS | D1 L21~22. S2-new-R2 L1260은 이미 전달된 독자·목적·길이와 사후 선호 변화를 근거로 이전의 요구 누락 가설을 주된 설명에서 낮추었다고 명시하고, 요구 명료화 불필요라는 반대 극단도 거부한다. L1012~1013의 edit 성공과 [최종 기록](evidence/s2-dir-clarified/revised/attempt-01/turn-02/workspace/.goal/s2/analysis.md) L6~21에서 변경 이유·미확인을 확인했다. 최초 S2-old-R2 L891에서도 같은 수정이 관찰된다. |
+| R4 | PASS | D1 L24~26. S3-R1 L24~28은 정책·CSV의 실제 read와 두 성공 결과다. L1021 및 [최종 기록](evidence/s3/revised/attempt-01/turn-02/workspace/.goal/s3/analysis.md) L3~28은 4시간 포함 기준·4/6건 준수·R03/R04의 첫 응답 이후 45/68시간을 정확히 구분하고 자료 파일과 연결한다. 완료 기한·대기 사유·태만·기한 단축 효과는 알 수 없다고 남겼다. S3-R2 L630은 근거 없이 사용자 인과 주장을 채택하지 않는다. |
+| R5 | PASS | D1 L11~15는 Concept·Context·Problem을 유지하고 필요에 따라 오갈 탐색 관점이라고 명시한다. L21~22는 문제 해석의 재검토를 허용한다. 전체 문구에 세 요소의 고정 순서나 최초 문제 해석 유지 요구는 없다. |
+| R6 | PASS | D1 L28~31의 현재 이해·남은 의문 기록, 이해/동의 비가정, 추가 반응 수용이 모두 있다. S1-R2 L33~34·213~214·291과 [최종 기록](evidence/s1/revised/attempt-01/turn-02/workspace/.goal/s1/analysis.md) L22~25는 사용자가 말한 구분의 이해만 기록하고 질문 감소 효과는 미확인으로 남긴다. 후속 S2-new-R1 L540~541 write와 S2-new-R2 L1012~1013 edit, 두 files.json·스냅샷은 cwd 기준 `.goal/s2/analysis.md` 생성·갱신을 입증한다. 최초 S2의 경로 FAIL은 아래에 별도로 유지한다. |
+| C1 | PASS | D1 description L3과 목적 L8~9가 사용자 이해의 발전을 명시한다. 질문·조사·재검토·기록·마무리의 전체 문구에서 그 목적과 충돌하는 지시는 없다. 실제 사용자의 일반적 이해도 향상까지 검증했다는 뜻은 아니다. |
+| C2 | PASS | D1 L15·19·30은 유연한 탐색과 고정 횟수·순서 및 반복 확인 요구의 배제를 명시한다. 전체 본문에 고정 인터뷰 절차가 없다. 실험의 고정 발화 두 개는 비교 조건이며 D1의 운영 규칙이 아니다. |
+| C3 | PASS | D1 L32는 목표·범위 확정을 Define에 남긴다. S1-R2 L291과 최종 기록 L25는 미확정 상태로 사용자의 종료를 따른다. S1 및 후속 S2의 실제 도구/응답에는 Define 문서 작성·자동 단계 진행·승인 반복이 없다. |
+| C4 | PASS | D1 전체에 COFA 사전 지식·전용 절차 요구가 없다. S1 독서 모임 공지, 최초/후속 S2 문서 협업, S3 문의 처리 사례는 해당 분야의 고정 입력만으로 설명·분석을 수행했다. |
+| C5 | PASS | D1은 확정안과 정확히 같은 간결한 행동 원칙이다. description·목적·세 관점·행동 선택·반응 재검토·조사·기록과 경계를 직접 담고, 긴 해설·대화 예시·분석 문서 필수 읽기 참조가 없다. `.goal/<goal>/analysis.md`는 출력 위치다. D2 예시는 그대로 보존됐다. |
+| C6 | PASS | Git 변경 범위에 새 평가 프로그램·runner 확장이 없다. S1~S3 및 후속 S2의 실제 assistant 메시지·조사/작성 도구 결과·연결된 세션·후보 파일이 있다. 문구 검토나 D2의 가상 대화를 실제 실행 대신 사용하지 않았다. 각 비교 문서에는 baseline/revised의 항목별 판정과 원본 위치가 있으며 원본 대조 결과와 부합한다. |
 
-## 산출물 판정
+## 기존 관찰과 후속 조건의 차이
 
-| 산출물 | 판정 | 근거 |
-|---|---|---|
-| D1 개선 스킬 | PASS | 이름·description을 포함한 Q4 확정 문구와 실제 파일이 정확히 일치한다. baseline/revised 스냅샷과 원본 system addendum도 해당 버전과 일치한다. 다른 스킬·AGENTS.md 변경은 없다. 이 판정은 산출물 일치이며 모든 실행 행동의 충족을 뜻하지 않는다. |
-| D2 기존 분석 문서의 예시 보존 | PASS | `analysis.md`·`analysis.html`은 Plan 종료 시점과 바이트 단위로 같다. Markdown L92~186의 가상 대화와 HTML의 여섯 가상 예시가 남아 있다. 스킬에 예시나 필수 읽기 의존성을 추가하지 않았다. HTML 디자인 변경도 없다. |
-| D3 문구 검토·실제 비교 증거 | PASS | shared에 고정 발화·자료·버전·실행 조건·문구 검토표가 있고, S1~S3에 원본 응답·도구 결과·세션·스냅샷·비교표와 실패 시도가 있다. 이 Verify에서 모든 R/C의 독립 판정을 기록했다. S2 경로 실패도 원본 그대로 보존돼 있다. 증거 확보와 행동 성공은 구별한다. |
+**S1:** 두 버전 모두 기존 정보에서 바로 탐색하고 마무리·Define 경계를 지켰다. 기존본은 둘째 발화 뒤 도구 호출 없이 종료했고 S1-B2 L51 및 [최종 파일](evidence/s1/baseline/attempt-02/turn-02/workspace/.goal/s1/analysis.md)은 첫 파일과 같아 사용자가 밝힌 이해·남은 의문을 기록하지 않았다. 이 R6 기록 갱신은 FAIL이다. 수정본은 S1-R2의 실제 edit로 두 내용을 반영했다. 이 한 사례에서는 후속 기록 행동의 차이가 관찰된다.
 
-## 관찰된 baseline/revised 차이
+**최초 S2:** 두 버전 모두 추가 정보로 해석을 수정하고 두 극단을 거부했다. 수정본은 이전 가설을 낮춘 이유를 더 명시적으로 설명했지만, baseline도 R3를 충족한다. 반면 정확한 경로는 두 버전 모두 FAIL이다. 수정본은 `s2/.goal/s2/analysis.md`, 기존본은 `s2/.goal/draft-revision-understanding/analysis.md`를 만들었다. 수정본의 두 [files.json](evidence/s2/revised/attempt-02/turn-01/files.json)·[files.json](evidence/s2/revised/attempt-02/turn-02/files.json)은 `analysis_exists:false`이며, 원본 도구와 [실제 최종 파일](evidence/s2/revised/attempt-02/turn-02/workspace/s2/.goal/s2/analysis.md)도 그 경로를 입증한다. 이 실패는 없어지지 않았다.
 
-- **S1:** 양쪽 모두 기존 정보에서 출발하고 원인·목표를 성급히 확정하지 않았다. baseline의 둘째 응답에는 도구 호출이 없고 분석 파일은 첫 응답 뒤와 같은 해시다. revised는 후속 사용자가 직접 표현한 이해와 남은 의문을 분석 문서에 추가했다. 이번 비교에서 확인된 행동 차이는 이 후속 기록 갱신이다.
-- **S2:** 양쪽 모두 새 정보에 따라 요구 전달 문제와 선호 변화를 구별하고 두 극단을 거부했다. revised는 이전 가능성에서 무엇을 낮췄는지 응답에 더 명시적으로 연결했다. 핵심 R3 행동의 충족 여부에는 차이가 없었다. 양쪽 모두 cwd 기준 기대 기록 위치를 놓쳤다. baseline의 실제 위치는 `s2/.goal/draft-revision-understanding/analysis.md`, revised는 `s2/.goal/s2/analysis.md`다.
-- **S3:** 양쪽 모두 직접 자료를 읽고 기준·계산·원인 미확인을 구분했다. revised는 사실·해석을 별도 절로 쓰고 중앙값도 계산했지만, 성공 조건의 충족 여부 차이는 관찰되지 않았다. 이를 수정본만의 조사 능력 개선 증거로 삼지 않는다.
+**후속 S2:** 새 [첫 입력](evidence/s2-dir-clarified/shared/turn-01.txt)은 cwd·goal 이름·출력 경로를 구별해 안내한다. 최초 발화의 사례 본문과 둘째 발화는 바이트 단위로 같고 두 스킬도 그대로다. 새 안내는 양쪽에 동일하게 전달됐다. 기존본 S2-new-B1 L549~550·B2 L759~760과 수정본 S2-new-R1 L540~541·R2 L1012~1013은 모두 `.goal/s2/analysis.md`에 직접 write/edit해 성공했다. 양쪽의 최종 문서는 실제 스냅샷 및 재구성한 도구 내용과 같으며 R2/R3도 계속 충족한다. 새 조건에서 수정본의 R6 경로 미충족은 해소됐고 baseline도 같은 결과다.
 
-## 미충족 사항과 재검토 단계
+따라서 후속 실행은 **입력 안내가 달라진 별도 조건의 성공 관찰**이다. 최초 응답의 경로만 교정하거나 품질 결과가 나올 때까지 같은 조건을 반복한 것으로 다루지 않는다. 경로 처리의 개선을 스킬 변경 효과로 귀속할 근거는 없고, 단일 추가 실행으로 최초 실패의 원인이 안내의 모호함 하나였다고 입증할 수도 없다. 현재 R6 PASS는 S1의 기록/마무리 증거와 명확한 경로를 안내한 후속 S2 증거에 근거한다. 최초 조건에서의 실패 가능성은 역사적 반례로 남는다.
 
-**R6의 기록 위치를 다시 다뤄야 한다.** 기대 위치의 부재는 도구와 실제 파일로 확인되므로 UNKNOWN이 아니라 FAIL이다. 다만 이 한 관찰로 스킬 문구 자체가 원인이라고 단정하지 않는다. 공통 안내는 “작업 폴더 이름은 s2”라고 했고 실제 cwd 이름은 `workspace`였다. 후보가 s2를 별도 하위 작업 폴더로 해석했을 가능성이 있으며, 이 원인은 현재 증거만으로 분리할 수 없다.
+**S3:** 두 버전 모두 실제 자료 조회, 정확한 기한·수치, 원인·해결 효과 미확인의 구분을 수행했다. 수정본은 사실/해석을 별도 구획으로 기록했고 R04의 4시간 포함 기준을 채팅에서도 명시했다. 기존본도 같은 필수 행동을 충족했으므로 조사 행동이 수정본에서 새로 생겼다고 판정하지 않는다. 수정본의 첫 채팅은 입력 파일명을 다시 쓰지 않았지만 안내한 분석 문서 L3~18에서 출처와 계산을 연결한다.
 
-- **Plan 재검토:** 공통 안내에서 cwd인 작업 폴더와 `.goal/<goal>`의 goal 이름을 구분하고 기대 기록 경로를 일관되게 전달하는 실행 조건을 정한다. 이는 기존 실패를 삭제하거나 사후 PASS로 바꾸는 작업이 아니다.
-- **Execute 재방문:** 사용자가 해당 단계 진행을 요청하면 확정된 조건에 따라 영향받는 비교 쌍을 실행하고 기존 증거와 함께 보존한다. 분석 파일을 실행자가 올바른 위치로 대신 옮기는 것으로 행동 충족을 입증할 수 없다.
-- **Define 재방문 조건:** 이를 해결하기 위해 Q4 확정 스킬 문구나 `.goal/<goal>/analysis.md` 요구 자체를 바꿀 필요가 생기면 Define에서 다시 합의한다. 현재 증거만으로 그 변경이 필요하다고 확정하지 않는다.
-- **Verify 재수행:** 후속 단계에서 확보한 증거로 R6와 변경의 영향을 받는 항목을 다시 판정한다. 이번 Verify에서는 위 단계를 수행하지 않았다.
+## 남은 한계와 목표 충족 범위
 
-각 버전·사례에서 성공 대화 한 개, 사용자 발화 두 개를 관찰했다. S3는 고정된 가상 자료 여섯 건이다. 이 결과는 세 사례에서의 행동과 문구 적합성에 대한 판단이며 실제 사용자의 일반적인 이해도 향상이나 장기 학습 효과의 증명이 아니다. 모든 Evaluation 항목의 판정은 완료했지만, 필수 항목 R6가 미충족이므로 목표 달성을 선언하지 않는다.
+- 현재 필수 Evaluation 항목의 미충족은 없다. 이전 S2의 경로 실패와 S1 baseline의 기록 갱신 실패는 삭제·완화하지 않았으며, 현재 수정본의 판정과 구분해 남겼다.
+- 기존 세 사례와 후속 한 사례의 각 버전 한 대화씩, 두 고정 발화만 관찰했다. 입력 민감도·재현 확률·모델 확률 변동·일반적인 학습 효과를 추정할 수 없다.
+- 스크립트에 고정된 사용자 발화는 실험 입력이다. S1의 “알겠어요”는 실제 사용자의 학습 향상 연구 결과가 아니다. 그 발화에서 드러난 범위만 기록했는지 평가했다.
+- R3의 사용 경험은 사용자 진술로, S3의 자료는 제공된 가상 고정 자료로 취급했다. 모든 문서 수정의 실제 원인이나 실제 조직의 병목을 별도로 입증한 것이 아니다.
+- 현재 PASS는 확정 문구의 적용·범위 준수와 명시된 비교 조건의 행동 증거를 종합한 목표 판정이다. 스킬 문구의 일반적 우월성, 명확하지 않은 모든 경로 안내에서의 안정성, 실제 사용자의 장기 이해도 향상을 주장하지 않는다.
