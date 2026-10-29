@@ -1,0 +1,48 @@
+{
+  "case": "s2",
+  "variant": "revised",
+  "attempt": 2,
+  "session_id": "26ad34e1-7842-409e-8395-1fba6b669cc6",
+  "cwd": "/var/folders/7d/dg5t4f7d5fjfd4cjfmzlb66w0000gn/T/conversation-182k6fwf/workspace",
+  "pi_version": "1.3.0",
+  "provider": "openai-codex",
+  "model": "gpt-6-sol",
+  "thinking": "medium",
+  "tools": [
+    "read",
+    "bash",
+    "edit",
+    "write"
+  ],
+  "skill_sha256": "4ffed4e4d6b11680be29b464ace3bc14975e5e1626b53e1b87b2ee2ce4aead31",
+  "input_sha256": [
+    "651ad6e62db129fd14f13c58f73a4a165e4186a426547ab6140c1dfd544fb211",
+    "cc855df9c20748b12faf2d003415f9567dbc8bfa4065a0bb353a767e00cbe83d"
+  ],
+  "initial_files": {},
+  "environment": {
+    "PI_OFFLINE": "1",
+    "inherited_variables": [
+      "HOME",
+      "USER",
+      "LOGNAME",
+      "SHELL",
+      "LANG",
+      "LC_ALL",
+      "LC_CTYPE",
+      "TERM",
+      "TMPDIR",
+      "PATH",
+      "__CF_USER_TEXT_ENCODING",
+      "PI_OFFLINE"
+    ],
+    "credentials_copied": false
+  },
+  "started_at": "2026-10-29T06:04:02.213001+00:00",
+  "conversation_completed": true,
+  "final_attempt": 2,
+  "session_user_messages_match": true,
+  "session_user_message_count": 2,
+  "failure": null,
+  "finished_at": "2026-10-29T06:05:00.622318+00:00"
+}
