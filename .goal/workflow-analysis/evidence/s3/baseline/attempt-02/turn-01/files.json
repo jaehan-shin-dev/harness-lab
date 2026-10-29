@@ -1,0 +1,8 @@
+{
+  "files": {
+    ".goal/s3/analysis.md": "675d0f6cc0a5ed08565d764c4550805c360b08fc18e8d3373b6e5b550386a8c5",
+    "data/request-log.csv": "6d25470045db649fe67798e998ab98e2f317b7b51aba264b7fa699516fc36fa7",
+    "data/triage-policy.md": "3ee8f71f255c9b52165322840e13481a20f167d8b778b887b995eb1ea604f4bc"
+  },
+  "analysis_exists": true
+}
