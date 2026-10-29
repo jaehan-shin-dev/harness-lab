@@ -18,16 +18,16 @@
 
 **Parallel:** no
 
-**Status:** ready
+**Status:** done
 
 **Checks:**
 
-- [ ] 원본을 먼저 보존한다: baseline의 SHA-256이 `change-proposal.md`의 `fe625a9044521877905576a23de557027e061c1e04d4572f6cb3b21dea9efe75`와 일치한다.
-- [ ] 확정 문구를 그대로 적용한다: 실제 스킬과 revised가 `change-proposal.md`의 전체 확정 문구와 바이트 단위로 일치한다. UTF-8·LF·마지막 개행을 유지한다.
-- [ ] 모든 R/C를 검토한다: `text-review.md`에 R1~R6, C1~C6 각각의 기준·해당 문구·PASS/FAIL/UNKNOWN·이유를 남긴다. 문구 PASS를 실제 행동 PASS로 확대하지 않는다.
-- [ ] 응답을 보기 전에 비교 입력을 고정한다: 02~04의 발화·S3 자료와 아래 protocol을 파일로 보존하고 `manifest.json`에 상대 경로·SHA-256을 기록한다.
-- [ ] 실행 조건을 재현할 수 있다: 아래 규칙을 `protocol.md`에 옮기고 목표 모델·CLI 버전·도구·비밀을 제외한 공통 설정을 `environment.json`에 기록한다. 실제 인증·모델 호출 가능 여부는 미확인으로 표시한다.
-- [ ] 범위를 지킨다: 다른 스킬·AGENTS.md·skill-eval·기존 분석 문서는 변경하지 않는다. 새 평가 프로그램이나 스킬의 분석 문서 읽기 의존성을 추가하지 않는다.
+- [x] 원본을 먼저 보존한다: baseline의 SHA-256이 `change-proposal.md`의 `fe625a9044521877905576a23de557027e061c1e04d4572f6cb3b21dea9efe75`와 일치한다.
+- [x] 확정 문구를 그대로 적용한다: 실제 스킬과 revised가 `change-proposal.md`의 전체 확정 문구와 바이트 단위로 일치한다. UTF-8·LF·마지막 개행을 유지한다.
+- [x] 모든 R/C를 검토한다: `text-review.md`에 R1~R6, C1~C6 각각의 기준·해당 문구·PASS/FAIL/UNKNOWN·이유를 남긴다. 문구 PASS를 실제 행동 PASS로 확대하지 않는다.
+- [x] 응답을 보기 전에 비교 입력을 고정한다: 02~04의 발화·S3 자료와 아래 protocol을 파일로 보존하고 `manifest.json`에 상대 경로·SHA-256을 기록한다.
+- [x] 실행 조건을 재현할 수 있다: 아래 규칙을 `protocol.md`에 옮기고 목표 모델·CLI 버전·도구·비밀을 제외한 공통 설정을 `environment.json`에 기록한다. 실제 인증·모델 호출 가능 여부는 미확인으로 표시한다.
+- [x] 범위를 지킨다: 다른 스킬·AGENTS.md·skill-eval·기존 분석 문서는 변경하지 않는다. 새 평가 프로그램이나 스킬의 분석 문서 읽기 의존성을 추가하지 않는다.
 
 계획 승인 기록: 2026-10-29 사용자가 4개 티켓 구성·의존관계·분담에 “승인”으로 답했다. 01은 main, 02~04는 01 이후 병렬 실행하는 subagent 소유로 유지한다.
 
@@ -76,3 +76,12 @@
 발화 폴더에는 `stdout.jsonl`, `stderr.txt`, `execution.json`, `files.json`, `workspace/`를 둔다. `workspace/`는 해당 응답 직후의 작업 폴더 스냅샷이다. `execution.json`은 명령·시간·종료 상태, `files.json`은 파일 목록·해시와 분석 문서 누락 여부를 담는다. `meta.json`은 스킬·입력·자료 해시, 실행 조건, 두 발화의 세션 연결 확인 결과와 최종 사용 시도를 담는다.
 
 이것은 증거 파일의 약속이며 새 프로그램의 명세가 아니다. 각 사례의 항목 판정은 Execute에서 기록한다. 전체 목표의 최종 판정과 `verify.md` 작성은 사용자가 Verify를 요청할 때 수행한다.
+
+## Check results
+
+- 원본 보존 PASS: [baseline](../evidence/shared/baseline.SKILL.md)의 SHA-256이 확정 기준과 일치한다.
+- 문구 적용 PASS: 실제 스킬·[revised](../evidence/shared/revised.SKILL.md)·변경안 전체 문구가 바이트 단위로 일치하며 32줄이다.
+- 문구 검토 PASS: [text-review.md](../evidence/shared/text-review.md)에 R1~R6·C1~C6의 문구와 이유를 남겼다. 실제 행동은 미판정이다.
+- 입력 고정 PASS: [manifest.json](../evidence/shared/manifest.json)의 12개 입력 해시를 다시 계산해 모두 일치했다.
+- 실행 조건 준비 PASS: [protocol.md](../evidence/shared/protocol.md)와 [environment.json](../evidence/shared/environment.json)에 pi 1.3.0, 모델·도구·세션·오류·증거 규칙을 기록했다. 실제 호출은 다음 티켓에서 수행한다.
+- 범위 PASS: 다른 스킬·AGENTS.md·skill-eval·기존 분석 문서 변경이 없다. 기존에 있던 다른 작업의 미커밋 변경은 그대로 둔다.
