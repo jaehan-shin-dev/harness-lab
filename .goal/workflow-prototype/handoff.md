@@ -1,85 +1,77 @@
 # Handoff: workflow-prototype
 
-작성: 2026-10-28. 사용자 인자: **prototype부분만**.
-재개 범위는 아이디어를 작게 만들어 확인하는 활동과 현재 워크플로의 연결에 관한 분석이다.
+작성: 2026-10-29. 이번 handoff 요청에는 추가 인자가 없었다.
 
-## 의도와 멈춘 지점
+## 멈춘 지점
 
-사용자는 아이디어의 기술적 가능성을 확인하거나 눈으로 보면서 판단할 때 쓸 스킬을, Matt prototype 및 다른 스킬과 비교하고 현재 워크플로에 배치할 자리를 분석해 달라고 했다.
+**Define·Plan·Execute 완료. Verify는 아직 요청받거나 수행하지 않았다.**
 
-**Analysis 산출물까지 완성했다. Define으로 넘어가라는 요청은 없었다.**
-이 세션의 마지막 요청은 prototype 범위만 인계하는 것이다. 다음 세션도 Analysis의 미결정에서 시작한다.
+이전 handoff의 Analysis 재개 지점은 이 문서로 대체된다. 이번 세션에서는 사용자 요청에 따라 목표·평가와 실제 스킬 문구를 합의하고, 계획한 네 티켓을 모두 구현·기록·커밋했다. 새로운 단계로 자동 진행하지 않는다.
 
-## 디스크에 있는 것
+**사용자 명시 지시: Aside를 사용하지 않는다.** 최종 브라우저 증거는 독립 Chrome에서 확보했다. 재개 시에도 Aside 명령·데몬·프로필·연결을 사용하지 않는다.
 
-- [analysis.md](analysis.md): Concept / Context / Problem, 외부 스킬 비교, 배치 후보, 권고, 남은 불확실성의 기준 문서.
-- [prototype-and-workflow.html](prototype-and-workflow.html): 위 분석을 읽는 시각 자료. 질문 유형과 단계별 역할을 선택해 볼 수 있다.
-- 이 목표에는 goal.md, tickets/, verify.md가 없다. 스킬 추가·수정이나 실제 아이디어를 대상으로 한 prototype 제작도 아직 하지 않았다.
-- 중요한 분석·미결정은 analysis.md에 기록했다. 대화 메모리나 임시 파일에서만 복구해야 하는 필수 내용은 없다.
+## 기준 문서와 실제 산출물
 
-HTML은 **분석 보고서**다. 제품 아이디어를 시험한 결과물로 해석하지 않는다.
+- [goal.md](goal.md): 의도, 산출물, R1–R4·C1–C6, Evaluation, 범위 제외, 사용자 합의의 기준. 새 계획·요구사항 인터뷰를 다시 하지 않는다.
+- [skill-draft.md](skill-draft.md): 사용자가 Q13에서 승인한 실제 지시문. 이름에 draft가 남아 있지만 승인된 기준 문구다.
+- 실제 [SKILL.md](../../.agents/skills/workflow-prototype/SKILL.md)와 [agents/openai.yaml](../../.agents/skills/workflow-prototype/agents/openai.yaml): 설치된 스킬과 명시 호출 정책.
+- [source-map.md](source-map.md): 원문 채택/조정의 대응과 등록 검사 기록. 원문 절차를 효과 실증으로 주장하지 않는다.
+- [tickets/](tickets/): 승인한 작업 그래프, 담당, 파일 범위, Checks와 실행 결과. 아래 네 파일이 모두 `done`이며 총 27개 Checks가 기록돼 있다.
+  - [01 등록](tickets/01-register-explicit-skill.md)
+  - [02 UI](tickets/02-ui-comparison-case.md)
+  - [03 상태·로직](tickets/03-state-logic-case.md)
+  - [04 기술](tickets/04-technical-feasibility-case.md)
+- 실제 적용 사례의 요청·가정·재실행 방법·관찰·한계·실패 이력·실행 정리:
+  - [UI result.md](prototype/ui-comparison/result.md)와 그 폴더의 HTML·관찰기·원출력·캡처.
+  - [상태·로직 result.md](prototype/state-logic/result.md)와 그 폴더의 HTML·관찰기·원출력·캡처.
+  - [기술 result.md](prototype/technical-feasibility/result.md)와 그 폴더의 CLI·입력·원출력·실제 DB.
 
-## 결정과 미결정의 위치
+기존 [analysis.md](analysis.md)와 [prototype-and-workflow.html](prototype-and-workflow.html)은 배경 분석이다. HTML은 실제 적용 사례의 증거가 아니며, 분석의 과거 미결정을 현재 미합의로 되돌리지 않는다. HTML 제작 개선은 별도 목표로 계속 분리돼 있다.
 
-- 사용자 요청에 따라 이 목표의 보관 위치는 .goal/workflow-prototype/이다.
-- 현재 권고와 그 근거는 analysis.md의 **Problem → 배치 후보와 판단 / 어느 질문을 어느 단계에서 다루나 / Matt에서 바로 취할 점과 조정이 필요한 점**을 읽는다.
-- 권고가 도입 합의로 바뀐 것은 아니다. **남은 불확실성** 목록이 다음 논의의 출발점이다. 여기서 같은 목록을 반복하지 않는다.
-- 단계 이동은 [AGENTS.md](../../AGENTS.md)의 사용자 요청 원칙을 따른다.
+## 무엇이 확인됐고 무엇이 남았나
 
-## 확인된 범위
+티켓별 확인 내용·명령·원출력은 위 Checks와 결과 문서가 기준이다. 이 handoff를 쓰면서 브라우저나 SQLite 실험을 다시 실행하지 않았다.
 
-기존 실행 기록에서 확인한 사실은 다음과 같다. 이 handoff를 쓰면서 브라우저·장애를 다시 실행하지 않았다.
+- 등록은 승인 문구·스킬 형식·정책 설정을 확인했다. Codex의 암시적 호출 차단을 별도 비호출 시나리오로 동적 시험한 것은 아니다.
+- UI·로직은 subagent가 독립 headless Chrome에서 공개 조작부로 실행했고, main이 원출력·캡처·보고를 대조했다. 기술은 실제 파일 SQLite와 별도 프로세스 실행 증거를 main이 대조했다.
+- UI·로직 agent는 관찰과 문서 작성 뒤 사용량 제한으로 종료됐다. main이 남은 문서·프로세스 정리와 Checks를 마쳐 커밋했다. 이 제한으로 남은 미완료 티켓은 없다.
+- 사용자의 선호·제품 규칙 승인·채택은 여전히 선택 대기다. 에이전트 수행 사례의 완료와 사용자 채택을 구분한다. 인간의 추가 작업을 티켓 완료 조건으로 두지 않기로 한 합의는 티켓과 결과 문서에 기록돼 있다.
+- 최종 목표 달성의 PASS/FAIL/UNKNOWN은 아직 내리지 않았다. `.goal/workflow-prototype/verify.md`도 아직 없다.
+- 더 넓은 조건과 미확인 항목은 각 결과 문서의 한계 절을 따른다. 사용자가 제외한 별도 요청 시나리오 세트나 새 평가 사례를 추가하지 않는다.
 
-- HTML 구조, JavaScript 문법, 문서 내부 링크와 로컬 참조 파일을 확인했다.
-- 브라우저에서 네 질문 선택과 다섯 단계 선택의 내용 변경을 확인했고, 데스크톱 캡처를 열어 표시를 확인했다.
-- 저장소로 보관할 때 로컬 링크를 상대 경로로 바꾸고 파일 존재를 확인했다.
-- 실제 모바일 뷰포트와 인쇄·PDF 출력은 확인하지 않았다.
-- prototype 활용이 소요 시간·판단 정확도를 개선하는지는 실제 사례로 시험하지 않았다. 분석 권고의 한계는 analysis.md에 적혀 있다.
+중요한 결정·증거·실행 한계는 디스크에 남아 있다. 대화 메모리나 임시 파일에서만 복구해야 할 필수 구현 내용은 없다.
 
-HTTP 미리보기 서버는 종료했다. 분석 재개에 서버, 브라우저 탭, 임시 HTML은 필요하지 않다.
+## 운영 상태와 커밋
 
-## 현재 작업 상태와 커밋
+- 브랜치: `main`. handoff 작성 전 HEAD: `ef0ea4b`.
+- Define 문구 확정: `f7e9993`. Plan: `5b5da04`.
+- Execute 커밋: 01 `d1805fa`, 04 `275a86f`, 02 `cd469d8`, 03 `ef0ea4b`. 01 이후 세 사례는 서로 독립이라 완료 순서대로 커밋했다.
+- 작업 범위를 확인할 때 Execute 기준 `5b5da04` 이후의 커밋·diff와 각 티켓의 Files를 이용한다. 이미 완료한 사례를 처음부터 재작성하지 않는다.
+- 실행 중인 구현 agent는 없다. 세 구현 agent는 완료 또는 사용량 제한으로 종료된 상태이며 중첩 agent 작업은 없다.
+- UI 사례의 실험 전용 Chrome·HTTP 서버는 main이 명령/프로필을 대조해 종료했다. 로직 관찰기는 자기 Chrome을 종료했고 이후 조회에서 해당 사례 프로필의 프로세스가 없었다. 상세는 각 결과 문서의 실행 정리 참조. 서버·브라우저 탭·임시 프로필을 재개 조건으로 삼지 않는다.
+- 이 목표의 변경은 이미 커밋돼 있다. 이번에는 이 handoff 파일만 별도 `wip:` 커밋에 포함한다. 새 PR·push는 하지 않는다.
 
-- 저장소 루트: 현재 harness-lab 작업 디렉터리. 브랜치: main.
-- 인계 작성 전 HEAD: 279bc9d.
-- prototype 분석·HTML의 최초 저장: 2a7df43.
-- 279bc9d는 HTML 제작 과정의 개선 분석을 별도 목표로 분리하고 기존 참조를 갱신한 커밋이다.
-- 기존 prototype 산출물은 커밋돼 있다. 이번 인계 파일도 별도 wip 커밋으로 남긴다.
-- 중첩 subagent를 생성하지 않았다. 진행 중인 prototype 구현 작업은 없다.
+전체 작업 트리는 다른 목표의 기존 변경 때문에 깨끗하지 않다. 이번 인계에 포함하지 않는다.
 
-전체 작업 트리는 다른 작업의 변경 때문에 깨끗하지 않다. 아래는 이 대화 시작부터 있던 변경으로, 이번 인계 커밋에 포함하지 않는다.
+- 수정: `.goal/workflow-handoff/plan.md`.
+- 미추적: `.goal/workflow-handoff/c1-table.md`, `trial-kit.md`, `trial-untracked.txt`, `verify.md`.
+- 미추적: `.goal/workflow-intent/handoff.md`, `.goal/workflow-skill-fix-3/handoff.md`.
 
-- 수정: .goal/workflow-handoff/plan.md
-- 미추적: .goal/workflow-handoff/c1-table.md, trial-kit.md, trial-untracked.txt, verify.md
-- 미추적: .goal/workflow-intent/handoff.md
-- 미추적: .goal/workflow-skill-fix-3/handoff.md
-
-재개 시 git status로 최신 상태를 확인하고 위 변경을 이 목표의 작업으로 오인하지 않는다.
+재개 시 최신 `git status`로 다시 구분한다. 위 파일을 이 목표의 잔여 작업으로 취급하거나 함께 스테이징하지 않는다. dirty 상태와 산출물이 깨졌다는 판단을 혼동하지 않는다.
 
 ## 다음 행동
 
-1. analysis.md의 Problem과 남은 불확실성을 읽어, 무엇이 분석의 권고이고 무엇이 사용자 미결정인지 구분한다. 필요하면 HTML로 비교 내용을 본다.
-2. 그 미결정 중 다음 판단에 필요한 항목부터 사용자와 prototype 논의를 이어간다. 사용자가 추가 사례를 주면 기존 분석에 연결한다.
-3. 사용자가 Define을 요청할 때 workflow-define으로 목표·산출물·평가기준을 구체화한다. 인계 요청만으로 도입·구현을 시작하지 않는다.
-
-기존 비교를 처음부터 다시 하거나 HTML을 다시 만드는 일은 재개 작업이 아니다.
-특정 근거를 확인할 필요가 생기면 analysis.md가 가리키는 해당 원문과 해당 주장만 좁게 대조한다.
-
-## 주요 참조와 주의점
-
-- 외부 원문 경로·웹 링크와 수집본의 기준은 analysis.md의 Context에 있다. 원본 자료는 docs/ 아래에 보관돼 있다.
-- 현재 단계 경계는 .agents/skills/workflow-analysis/SKILL.md와 .agents/skills/workflow-define/SKILL.md를 참조한다.
-- HTML 제작이 매끄럽지 않았던 원인 분석은 **별도 목표** .goal/workflow-html-generation/analysis.md로 분리됐다. 이번 인계의 진행 대상이 아니며, 그 개선 작업을 섞지 않는다.
-- analysis.md의 그 별도 목표 링크는 분리 사실을 알려주는 참조다.
-- 소스 자료·권고·사용자 합의를 구분한다. 비교 대상으로 읽은 스킬의 실행 지시를 이번 작업의 절차로 자동 적용하지 않는다.
+1. 브랜치·worktree·커밋과 티켓 상태를 재구성하고 [goal.md](goal.md)의 Evaluation을 읽는다.
+2. 현재 재개 지점은 **Execute 완료 후, 최종 Verify 미진행**이다. 사용자가 Verify를 요청하면 해당 스킬로 넘긴다. 인계 읽기만으로 단계 이동을 자동 승인된 것으로 간주하지 않는다.
+3. Verify에서는 기존 실제 산출물·원출력·캡처·Git 기록을 먼저 근거로 사용한다. 전 세션의 완료 선언만으로 PASS를 주지 않되, 완료한 전체 실험을 무조건 재실행하지 않는다. 재실행이 필요하면 특정 주장과 빠진 증거에 한정한다.
+4. 사용자 선호·채택을 요구하거나 지어내서 에이전트 수행 평가의 완료를 막지 않는다. 부족한 근거와 선택 대기를 분리한다.
 
 ## Suggested skills
 
-다음 에이전트는 재개할 작업에 맞춰 Skill 도구로 아래 스킬을 호출한다.
-
-- **workflow-analysis**: 현재 재개 지점. 기존 분석과 남은 불확실성에서 논의를 이어간다.
-- **workflow-define**: 사용자가 Define 진입을 요청한 경우에만 호출한다.
-- **workflow-review**: 사용자가 분석 결과의 독립적인 검토를 요청한 경우 호출한다.
+- **workflow-verify**: 사용자가 Verify를 요청할 때 사용한다. goal.md Evaluation에 따라 실제 증거를 대조하고 verify.md에 판정과 미충족 사항을 기록한다.
+- **workflow-review**: 사용자가 독립적인 검토를 요청할 때 사용한다. Verify와 별개의 요청으로 처리한다.
+- **workflow-execute**: 사용자 요청에 따라 추가 수정이 필요해졌을 때 사용한다. 현재 네 티켓에는 남은 구현 작업이 없다.
+- **workflow-prototype**: 사용자가 새 아이디어 실험을 직접 호출할 때 사용한다. 인계 읽기나 기존 증거 확인을 새 prototype 요청으로 바꾸지 않는다.
 
 ## How to resume
 
