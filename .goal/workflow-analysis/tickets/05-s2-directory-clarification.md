@@ -13,7 +13,7 @@
 - .goal/workflow-analysis/evidence/s2-dir-clarified/comparison.md.
 - 이 티켓의 Status와 Check results.
 
-**Owner:** subagent
+**Owner:** main
 
 **Parallel:** no
 
@@ -33,3 +33,7 @@
 사용자의 “dir 만 수정…그렇게 진행해주고 verify 끝내자”를 저장 위치 안내 수정→영향받은 S2 쌍 재실행→독립 Verify까지 진행하는 승인으로 반영한다. 새 요구나 스킬 문구 변경은 없다. 원래 4개 티켓의 완료 기록과 최초 Verify는 git에 보존한다.
 
 실행은 ../evidence/s2-dir-clarified/shared/protocol.md를 따른다. 기본 실행 방식은 기존 shared/protocol.md를 참조한다. 판정용 subagent에는 이 티켓이나 Execute 완료 주장을 넘기지 않는다. Verify는 이 실행 커밋 뒤 별도 단계로 수행한다.
+
+## 실행 담당 조정
+
+모델 호출 전 권한 요청 두 건이 메인 중단으로 취소됐고 실제 프로세스·결과 파일은 생성되지 않았다. 같은 권한 절차를 메인 세션에서 직접 요청하도록 Owner를 main으로 바꾼다. 입력·모델·성공 조건은 그대로다. 이는 사용자 승인 철회나 모델 응답 실패가 아니며, 실행 전 대기 중단으로 기록한다.
