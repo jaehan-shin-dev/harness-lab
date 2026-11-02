@@ -13,6 +13,7 @@ description: workflow-grill로 사용자를 인터뷰해 목표를 Objective, De
 - Objective: 궁극적으로 달성하려는 상태
 - Deliverable: 완성됐을 때 산출물이 어떤 모습인지. 읽는 사람이 이상한 점을 알아볼 수 있는 해상도로
 - Requirements: 목표 달성을 위해 만족해야 하는 조건
+  - 코드를 만들거나 고치는 목표면 핵심 입력의 이상 입력 정책(거부·보정 등)을 묻는다
 - Constraints: 목표 달성 과정에서 지켜야 하는 제약
 - Out of scope: 이번 목표에서 하지 않기로 한 것
 - Evaluation: Requirements와 Constraints 항목마다 Criteria(성공 조건), Method(확인 방법), Evidence(판단 증거).
