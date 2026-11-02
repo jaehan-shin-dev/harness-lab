@@ -12,7 +12,7 @@ Break `goal.md` into a set of **tickets**: tracer-bullet vertical slices, each d
 
 ### 1. Gather context
 
-Work from `.goal/<goal>/goal.md`: read it in full. Do not interview the user. If a ticket would need a decision goal.md does not record, stop and tell the user to return to Define and update goal.md.
+Work from `.goal/<goal>/goal.md` and, if present, `.goal/<goal>/design.md`: read them in full. Do not interview the user. If a ticket would need a decision neither records, stop and tell the user to return to Define and update them.
 
 ### 2. Explore the codebase (optional)
 
@@ -39,7 +39,7 @@ Give each ticket an **Owner**: `main` when doing it directly is quicker, `subage
 
 Mark a ticket **Parallel: yes** only when it can finish on its own and touches no file another ticket touches.
 
-Give each ticket **Checks**, each one a condition and how to check it. A ticket that changes code writes its Checks as tests at the seams goal.md's Evaluation names.
+Give each ticket **Checks**, each one a condition and how to check it. A ticket that changes code writes its Checks as tests at the seams design.md names.
 
 Every requirement in goal.md is covered by at least one ticket; list them under **Covers**.
 
