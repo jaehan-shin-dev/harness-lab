@@ -373,6 +373,17 @@ class StatusTest(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertEqual(out["action"], "continue-finish")
 
+    def test_status_inside_worktree_while_finishing_lists_uncommitted(self):
+        # worktree-dirty로 멈춘 뒤 worktree에 들어가 다시 부르면 ① 미커밋 검사에 쓸 목록이 나와야 한다
+        self.repo.run("create", "goal-x")
+        self.set_state("finishing")
+        wt = self.repo.wt_path("goal-x")
+        self.repo.write("work.txt", "w\n", root=wt)
+        code, out = self.repo.run("status", "goal-x", cwd=wt)
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["action"], "continue-finish")
+        self.assertEqual(out["uncommitted"], ["work.txt"])
+
     def test_status_with_creating_receipt_stops_as_create_incomplete(self):
         self.repo.run("create", "goal-x")
         self.set_state("creating")

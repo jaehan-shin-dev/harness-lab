@@ -1033,7 +1033,8 @@ def cmd_status(cwd, goal):
         out["worktree"] = receipt["worktree"]
     if action == "create":
         out["unlisted"] = unlisted(repo, inventory(repo, rules, goal))
-    if action == "finish":
+    # worktree 안에서 부른 끝내기(처음이든 이어 하기든)는 ① 미커밋 검사에 이 목록을 쓴다
+    if action == "finish" or (action == "continue-finish" and repo.top == receipt["worktree"]):
         out["uncommitted"] = worktree_uncommitted(receipt)
     if stop is not None:
         out["stops"] = [stop.to_json()]
