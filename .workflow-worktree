@@ -1,0 +1,24 @@
+# workflow-worktree 목록 파일: git이 추적하지 않는 항목을 worktree에서 어떻게 다룰지
+# 형식과 방식은 .agents/skills/workflow-worktree/SKILL.md
+
+# 상대 링크라 그대로 복사하면 worktree 자기 .agents·AGENTS.md를 가리킨다
+copy .claude
+copy CLAUDE.md
+
+# 읽기 전용 참고 자료
+link docs
+
+# 이 goal 문서는 옮기고, 다른 goal 문서는 읽기만 한다
+move .goal/{goal}
+link .goal/*
+
+# 평가 도구: 소스는 고쳐서 돌려주고, 결과는 새로 생긴 것만 돌려준다
+sync skill-eval
+sync-empty skill-eval/results
+
+# 다시 만들 수 있는 것
+skip skill-eval/.venv
+skip skill-eval/.cache
+skip skill-eval/.pytest_cache
+skip **/__pycache__
+setup cd skill-eval && uv sync
