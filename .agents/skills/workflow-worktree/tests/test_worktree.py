@@ -1,6 +1,7 @@
 """workflow-worktree script 시험.
 
 바깥 seam(status·create·finish 명령과 목록 파일)을 임시 폴더의 진짜 git 저장소에서 시험한다.
+내부 seam은 3-way 판정(`three_way`) 하나다.
 """
 import json
 import os
@@ -12,6 +13,9 @@ import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPT = os.path.join(os.path.dirname(HERE), "worktree.py")
+
+sys.path.insert(0, os.path.dirname(HERE))
+import worktree  # noqa: E402  내부 seam three_way만 쓴다
 
 
 def git(cwd, *args):
@@ -187,6 +191,13 @@ class OutputTest(unittest.TestCase):
                              cwd=self.repo.path, capture_output=True, text=True)
         self.assertEqual(out.returncode, 0, out.stderr)
         self.assertIn("바뀐 채로 버린 사본: notes/a.txt", out.stdout)
+
+    def test_default_output_reports_failed_setup(self):
+        self.repo.list_file("setup exit 3\n")
+        out = subprocess.run([sys.executable, SCRIPT, "create", "goal-x"],
+                             cwd=self.repo.path, capture_output=True, text=True)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertIn("준비 명령 실패(종료 코드 3): exit 3", out.stdout)
 
     def test_unexpected_git_failure_is_script_error(self):
         empty = os.path.join(self.repo.parent, "empty")
@@ -421,6 +432,46 @@ class ModeTest(unittest.TestCase):
         self.assertEqual(out["moved_by_git"], [])
         self.assertEqual(out["items"], [{"path": "cache", "mode": "skip"}])
 
+    def test_skip_items_made_again_in_worktree_are_removed_with_it(self):
+        # gitignore하지 않은 skip 항목: 만들 때 있던 것(cache), 없던 것(build), pattern으로만 아는 것(lib/__pycache__)
+        self.repo.write("lib/m.py", "m\n")
+        git(self.repo.path, "add", "lib")
+        git(self.repo.path, "commit", "-q", "-m", "lib")
+        self.repo.list_file("skip cache\nskip build\nskip **/__pycache__\n"
+                            "setup mkdir -p build && echo built > build/out.bin\n")
+        self.repo.write("cache/c.bin", "c\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(self.read("build/out.bin", root=self.wt), "built\n")
+
+        self.repo.write("cache/c.bin", "made again\n", root=self.wt)
+        self.repo.write("lib/__pycache__/m.pyc", "pyc\n", root=self.wt)
+        self.commit_in_wt("goal.txt", "goal work\n")
+        code, out = self.repo.run("status", "goal-x", cwd=self.wt)
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["uncommitted"], [])
+
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertFalse(os.path.lexists(self.wt))
+        self.assertNotIn(self.wt, git(self.repo.path, "worktree", "list", "--porcelain"))
+        self.assertEqual(self.read("cache/c.bin"), "c\n")
+        self.assertFalse(os.path.lexists(os.path.join(self.repo.path, "build")))
+        self.assertFalse(os.path.lexists(os.path.join(self.repo.path, "lib/__pycache__")))
+
+    def test_setup_runs_inside_worktree_and_failure_does_not_stop_create(self):
+        self.repo.list_file("setup pwd -P > where.txt\nsetup echo noise on stdout\nsetup exit 3\n")
+        code, out = self.repo.run("create", "goal-x")  # stdout이 JSON 그대로여야 읽힌다
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["ok"], True)
+        self.assertEqual(out["setup"], [
+            {"cmd": "pwd -P > where.txt", "exit": 0},
+            {"cmd": "echo noise on stdout", "exit": 0},
+            {"cmd": "exit 3", "exit": 3},
+        ])
+        self.assertEqual(self.read("where.txt", root=self.wt), self.wt + "\n")
+        self.assertFalse(os.path.exists(os.path.join(self.repo.path, "where.txt")))
+
     def test_unlisted_new_file_moves_by_git_and_listed_items_stay_out_of_stash(self):
         self.repo.list_file("link docs\nmove notes\n")
         self.repo.write("docs/a.md", "a\n")
@@ -556,6 +607,244 @@ class SameRuleTwoReposTest(unittest.TestCase):
         self.assertEqual(self.read(".goal/goal-x/goal.md"), "v1\nv2 in worktree\n")
         self.assertNotIn(".goal", git(self.repo.path, "log", "--all", "--name-only", "--format="))
         self.assertEqual(git(self.repo.path, "status", "--porcelain"), "?? .goal/\n")
+
+
+SHA_A = "87428fc522803d31065e7bce3cf03fe475096631e5e07bbd7a0fde60c4cf25c7"  # sha256("a\n")
+SHA_X = "73cb3858a687a8494ca3323053016282f3dad39d42cf62ca4e79dda2aac7d9ac"  # sha256("x\n")
+
+
+class SyncTest(unittest.TestCase):
+    """sync·sync-empty: 만들 때 시작 지문을 적고, 끝낼 때 파일마다 3-way로 돌려준다(Q19·Q20·Q23)."""
+
+    def setUp(self):
+        self.repo = Repo()
+        self.addCleanup(self.repo.cleanup)
+        self.wt = self.repo.wt_path("goal-x")
+
+    def read(self, rel, root=None):
+        with open(os.path.join(root or self.repo.path, rel)) as f:
+            return f.read()
+
+    def receipt(self):
+        with open(os.path.join(self.repo.path, ".git", "workflow-worktree", "goal-x.json")) as f:
+            return json.load(f)
+
+    def test_receipt_records_start_fingerprints_for_sync_and_copy(self):
+        self.repo.write("shared/x.md", "x\n")
+        git(self.repo.path, "add", "shared")
+        git(self.repo.path, "commit", "-q", "-m", "shared")
+        self.repo.list_file("sync tools\ncopy alias\n")
+        os.symlink("shared", os.path.join(self.repo.path, "alias"))
+        self.repo.write("tools/a.txt", "a\n")
+        self.repo.write("tools/sub/x.txt", "x\n")
+        os.symlink("a.txt", os.path.join(self.repo.path, "tools/ln"))
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["items"], [{"path": "alias", "mode": "copy"}, {"path": "tools", "mode": "sync"}])
+        self.assertEqual(self.receipt()["items"], [
+            {"path": "alias", "mode": "copy", "base": {"alias": "link:shared"}},
+            {"path": "tools", "mode": "sync", "base": {
+                "tools/a.txt": SHA_A, "tools/ln": "link:a.txt", "tools/sub/x.txt": SHA_X}},
+        ])
+        # sync는 복사다: 원래 폴더에도 남는다
+        self.assertEqual(self.read("tools/a.txt", root=self.wt), "a\n")
+        self.assertEqual(os.readlink(os.path.join(self.wt, "tools/ln")), "a.txt")
+        self.assertEqual(self.read("tools/a.txt"), "a\n")
+
+    def commit_in_wt(self):
+        self.repo.write("goal.txt", "goal work\n", root=self.wt)
+        git(self.wt, "add", "goal.txt")
+        git(self.wt, "commit", "-q", "-m", "goal work")
+
+    def test_sync_brings_worktree_edits_back_and_keeps_main_edits(self):
+        self.repo.list_file("sync tools\n")
+        self.repo.write("tools/edit.txt", "e\n")
+        self.repo.write("tools/del.txt", "d\n")
+        self.repo.write("tools/main-edit.txt", "m\n")
+        self.repo.write("tools/same.txt", "s\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+
+        self.repo.write("tools/edit.txt", "e\nedited in worktree\n", root=self.wt)
+        self.repo.write("tools/new/n.txt", "new in worktree\n", root=self.wt)
+        os.remove(os.path.join(self.wt, "tools/del.txt"))
+        self.repo.write("tools/main-edit.txt", "m\nedited in main\n")
+        self.commit_in_wt()
+
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["synced"], ["tools/del.txt", "tools/edit.txt", "tools/new/n.txt"])
+        self.assertEqual(self.read("tools/edit.txt"), "e\nedited in worktree\n")
+        self.assertEqual(self.read("tools/new/n.txt"), "new in worktree\n")
+        self.assertFalse(os.path.lexists(os.path.join(self.repo.path, "tools/del.txt")))
+        self.assertEqual(self.read("tools/main-edit.txt"), "m\nedited in main\n")
+        self.assertEqual(self.read("tools/same.txt"), "s\n")
+        self.assertFalse(os.path.lexists(self.wt))
+        self.assertEqual(git(self.repo.path, "status", "--porcelain"), "?? tools/\n")
+
+    def snapshot(self, *roots):
+        """브랜치·worktree 목록·HEAD와 폴더마다 파일 내용."""
+        files = {}
+        for root in roots:
+            for dirpath, _, names in os.walk(root):
+                if ".git" in dirpath.split(os.sep):
+                    continue
+                for name in names:
+                    full = os.path.join(dirpath, name)
+                    with open(full, "rb") as f:
+                        files[full] = f.read()
+        return (self.repo.head(), git(self.repo.path, "branch", "--list"),
+                git(self.repo.path, "worktree", "list", "--porcelain"), files)
+
+    def test_sync_conflict_stops_before_merge_and_changes_nothing(self):
+        self.repo.list_file("sync tools\n")
+        self.repo.write("tools/a.txt", "a\n")
+        self.repo.write("tools/b.txt", "b\n")
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.repo.write("tools/a.txt", "a\nedited in worktree\n", root=self.wt)
+        self.repo.write("tools/b.txt", "b\nonly worktree\n", root=self.wt)
+        self.repo.write("tools/a.txt", "a\nedited in main\n")
+        before = self.snapshot(self.repo.path, self.wt)
+
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        self.assertEqual(out["ok"], False)
+        self.assertEqual(out["stops"][0]["code"], "sync-conflict")
+        self.assertEqual(out["stops"][0]["paths"], ["tools/a.txt"])
+        self.assertEqual(self.snapshot(self.repo.path, self.wt), before)
+        self.assertFalse(os.path.exists(os.path.join(self.repo.path, "goal.txt")))
+
+    def test_sync_empty_starts_empty_and_brings_back_only_new_results(self):
+        self.repo.list_file("sync-empty results\n")
+        self.repo.write("results/m1/summary.csv", "m1\n")
+        self.repo.write("results/m2/report.md", "m2\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(os.listdir(os.path.join(self.wt, "results")), [])
+        self.assertEqual(self.receipt()["items"], [{"path": "results", "mode": "sync-empty", "base": {}}])
+
+        self.repo.write("results/t17/summary.csv", "t17\n", root=self.wt)
+        self.repo.write("results/t17/runs/r.json", "{}\n", root=self.wt)
+        self.commit_in_wt()
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["synced"], ["results/t17/runs/r.json", "results/t17/summary.csv"])
+        self.assertEqual(self.read("results/t17/summary.csv"), "t17\n")
+        self.assertEqual(sorted(os.listdir(os.path.join(self.repo.path, "results"))), ["m1", "m2", "t17"])
+        self.assertEqual(self.read("results/m1/summary.csv"), "m1\n")
+        self.assertEqual(self.read("results/m2/report.md"), "m2\n")
+        self.assertFalse(os.path.lexists(self.wt))
+
+    def test_sync_empty_same_name_on_both_sides_is_sync_conflict(self):
+        self.repo.list_file("sync-empty results\n")
+        self.repo.write("results/m1/summary.csv", "m1\n")
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.repo.write("results/r1/summary.csv", "from worktree\n", root=self.wt)
+        self.repo.write("results/r1/summary.csv", "from main\n")
+        before = self.snapshot(self.repo.path, self.wt)
+
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        self.assertEqual(out["stops"][0]["code"], "sync-conflict")
+        self.assertEqual(out["stops"][0]["paths"], ["results/r1/summary.csv"])
+        self.assertEqual(self.snapshot(self.repo.path, self.wt), before)
+
+    def test_sync_item_missing_at_create_starts_from_empty_base(self):
+        self.repo.list_file("sync tools\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["missing"], ["tools"])
+        self.assertEqual(self.receipt()["items"], [{"path": "tools", "mode": "sync", "missing": True, "base": {}}])
+
+        self.repo.write("tools/w.txt", "made in worktree\n", root=self.wt)
+        self.repo.write("tools/m.txt", "made in main\n")
+        self.commit_in_wt()
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["synced"], ["tools/w.txt"])
+        self.assertEqual(self.read("tools/w.txt"), "made in worktree\n")
+        self.assertEqual(self.read("tools/m.txt"), "made in main\n")
+        self.assertFalse(os.path.lexists(self.wt))
+
+    def test_nested_skip_and_sync_empty_under_sync(self):
+        # 줄 순서를 일부러 섞었다. 경로마다 가장 구체적인 줄이 이긴다
+        self.repo.list_file(
+            "skip **/__pycache__\n"
+            "sync-empty skill-eval/results\n"
+            "sync skill-eval\n"
+            "skip skill-eval/.venv\n"
+        )
+        self.repo.write("skill-eval/.gitignore", ".venv/\n__pycache__/\n*.pyc\n")
+        self.repo.write("skill-eval/config.yaml", "c\n")
+        self.repo.write("skill-eval/skilleval/runner.py", "r\n")
+        self.repo.write("skill-eval/skilleval/__pycache__/runner.pyc", "pyc in main\n")
+        self.repo.write("skill-eval/.venv/bin/python", "venv in main\n")
+        self.repo.write("skill-eval/results/m1/summary.csv", "m1\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["items"], [
+            {"path": "skill-eval", "mode": "sync",
+             "except": ["skill-eval/.venv", "skill-eval/results", "skill-eval/skilleval/__pycache__"]},
+            {"path": "skill-eval/.venv", "mode": "skip"},
+            {"path": "skill-eval/results", "mode": "sync-empty"},
+            {"path": "skill-eval/skilleval/__pycache__", "mode": "skip"},
+        ])
+        self.assertEqual(self.read("skill-eval/skilleval/runner.py", root=self.wt), "r\n")
+        self.assertFalse(os.path.lexists(os.path.join(self.wt, "skill-eval/.venv")))
+        self.assertFalse(os.path.lexists(os.path.join(self.wt, "skill-eval/skilleval/__pycache__")))
+        self.assertEqual(os.listdir(os.path.join(self.wt, "skill-eval/results")), [])
+
+        # 양쪽에서 시험을 돌린 것처럼 캐시가 생기고 바뀐다. worktree는 결과 하나와 설정 하나를 고친다
+        self.repo.write("skill-eval/skilleval/__pycache__/runner.pyc", "pyc changed in main\n")
+        self.repo.write("skill-eval/tests/__pycache__/t.pyc", "new pyc in main\n")
+        self.repo.write("skill-eval/tests/__pycache__/t.pyc", "new pyc in worktree\n", root=self.wt)
+        self.repo.write("skill-eval/skilleval/__pycache__/runner.pyc", "pyc in worktree\n", root=self.wt)
+        self.repo.write("skill-eval/.venv/bin/python", "venv in worktree\n", root=self.wt)
+        self.repo.write("skill-eval/config.yaml", "c\nedited in worktree\n", root=self.wt)
+        self.repo.write("skill-eval/results/t17/summary.csv", "t17\n", root=self.wt)
+        self.commit_in_wt()
+
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["synced"], ["skill-eval/config.yaml", "skill-eval/results/t17/summary.csv"])
+        self.assertEqual(self.read("skill-eval/config.yaml"), "c\nedited in worktree\n")
+        self.assertEqual(self.read("skill-eval/results/t17/summary.csv"), "t17\n")
+        self.assertEqual(self.read("skill-eval/results/m1/summary.csv"), "m1\n")
+        self.assertEqual(self.read("skill-eval/skilleval/__pycache__/runner.pyc"), "pyc changed in main\n")
+        self.assertEqual(self.read("skill-eval/tests/__pycache__/t.pyc"), "new pyc in main\n")
+        self.assertEqual(self.read("skill-eval/.venv/bin/python"), "venv in main\n")
+        self.assertFalse(os.path.lexists(self.wt))
+
+
+class ThreeWayTest(unittest.TestCase):
+    """Q20 표: (시작, 원래, worktree) 지문 → 판정. None은 그 쪽에 파일이 없다는 뜻이다."""
+
+    TABLE = [
+        # 있던 파일
+        ("안 바뀜", "A", "A", "A", "same"),
+        ("worktree만 바뀜", "A", "A", "B", "take-worktree"),
+        ("원래만 바뀜", "A", "B", "A", "keep-main"),
+        ("양쪽이 같게 바뀜", "A", "B", "B", "same"),
+        ("양쪽이 다르게 바뀜", "A", "B", "C", "conflict"),
+        # 새 파일
+        ("worktree에만 새 파일", None, None, "B", "take-worktree"),
+        ("원래에만 새 파일", None, "B", None, "keep-main"),
+        ("양쪽에 같은 새 파일", None, "B", "B", "same"),
+        ("양쪽에 다른 새 파일", None, "B", "C", "conflict"),
+        # 지운 파일
+        ("worktree만 지움", "A", "A", None, "take-worktree"),
+        ("원래만 지움", "A", None, "A", "keep-main"),
+        ("worktree는 지웠는데 원래가 바뀜", "A", "B", None, "conflict"),
+        ("원래는 지웠는데 worktree가 바뀜", "A", None, "B", "conflict"),
+        ("양쪽 다 지움", "A", None, None, "same"),
+    ]
+
+    def test_three_way_table(self):
+        for name, base, main, wt, expected in self.TABLE:
+            with self.subTest(name):
+                self.assertEqual(worktree.three_way(base, main, wt), expected)
 
 
 if __name__ == "__main__":

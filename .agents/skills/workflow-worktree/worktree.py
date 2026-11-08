@@ -375,6 +375,105 @@ def remove_entry(path):
         shutil.rmtree(path)
 
 
+def prune_empty_dirs(root, rel, stop):
+    """rel의 위 폴더가 비었으면 stop(그 자신은 남김)까지 올라가며 지운다."""
+    parent = os.path.dirname(rel)
+    while parent and is_under(parent, stop):
+        full = os.path.join(root, parent)
+        if not os.path.isdir(full) or os.path.islink(full) or os.listdir(full):
+            return
+        os.rmdir(full)
+        parent = os.path.dirname(parent)
+
+
+SYNC_MODES = ("sync", "sync-empty")
+
+
+def sync_fingerprints(root, item, matchers):
+    """sync 항목의 파일마다 지문. 아래에서 방식이 바뀌는 곳은 뺀다.
+
+    except(만들 때 있던 자리)만으로는 만든 뒤 새로 생긴 `**/__pycache__` 같은 자리를 못 빼므로,
+    경로마다 영수증에 적은 목록 줄로 다시 고른다.
+    """
+    path, mode, excepts = item["path"], item["mode"], item.get("except", [])
+    out = {}
+
+    def visit(rel):
+        full = os.path.join(root, rel)
+        if rel != path:
+            m = most_specific(matchers, rel)
+            if covered(rel, excepts) or (m is not None and m.mode != mode):
+                return
+        if os.path.isdir(full) and not os.path.islink(full):
+            for name in sorted(os.listdir(full)):
+                visit(rel + "/" + name)
+        else:
+            out.update(fingerprints(root, rel))
+
+    if os.path.lexists(os.path.join(root, path)):
+        visit(path)
+    return out
+
+
+def sync_decisions(main, wt, item, matchers):
+    """sync 항목의 파일마다 three_way. (돌려줄 [(경로, worktree 지문)], 충돌 [경로])"""
+    base = item.get("base", {})  # 만들 때 없던 항목은 시작 지문이 빈 것이다
+    ours, theirs = sync_fingerprints(main, item, matchers), sync_fingerprints(wt, item, matchers)
+    take, conflicts = [], []
+    for path in sorted(set(base) | set(ours) | set(theirs)):
+        verdict = three_way(base.get(path), ours.get(path), theirs.get(path))
+        if verdict == "take-worktree":
+            take.append((path, theirs.get(path)))
+        elif verdict == "conflict":
+            conflicts.append(path)
+    return take, conflicts
+
+
+def apply_sync(main, wt, item_path, take):
+    """worktree 쪽을 따를 파일을 원래 폴더에 반영한다. 지운 것을 먼저 지워야 폴더↔파일 바뀜도 맞는다."""
+    for path, fp in take:
+        if fp is None:
+            full = os.path.join(main, path)
+            if os.path.lexists(full):
+                remove_entry(full)
+            prune_empty_dirs(main, path, item_path)
+    for path, fp in take:
+        if fp is not None:
+            dst = os.path.join(main, path)
+            if os.path.islink(dst) or os.path.isfile(dst):
+                os.unlink(dst)
+            elif os.path.isdir(dst):
+                os.rmdir(dst)  # 비어 있지 않으면 실패한다(지우지 않는다)
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            copy_entry(os.path.join(wt, path), dst)
+
+
+def skipped_by_rule(matchers, rel):
+    """목록 줄로 보면 skip인 경로. 만들 때 없던 skip 자리(setup이 만든 폴더, 새 `__pycache__`)도 여기에 걸린다."""
+    m = most_specific(matchers, rel)
+    return m is not None and m.mode == "skip"
+
+
+def clear_items(wt, items, matchers):
+    """worktree에 남은 목록 항목(돌려준 sync 사본, 다시 생긴 skip)을 지운다. git이 추적하지 않는 것만 건드린다."""
+    targets = [i["path"] for i in items if i["mode"] in SYNC_MODES + ("skip",)]
+    skips = [m for m in matchers if m.mode == "skip"]
+    entries = untracked_entries(wt)
+
+    def visit(rel):
+        full = os.path.join(wt, rel)
+        if covered(rel, targets) or skipped_by_rule(matchers, rel):
+            remove_entry(full)
+        elif os.path.isdir(full) and not os.path.islink(full) and (
+                any(is_under(t, rel) for t in targets) or any(m.below(rel.split("/")) for m in skips)):
+            for name in sorted(os.listdir(full)):
+                visit(rel + "/" + name)
+
+    for entry in sorted(entries):
+        if not any(is_under(entry, other) for other in entries) and os.path.lexists(os.path.join(wt, entry)):
+            visit(entry)
+
+
 def fingerprints(root, rel):
     """파일마다 지문: 내용의 sha256, 링크는 `link:<가리키는 곳>`. 폴더는 안으로 내려간다."""
     full = os.path.join(root, rel)
@@ -397,6 +496,20 @@ def item_fingerprints(root, item):
     for unit in units(root, item["path"], item.get("except", [])):
         out.update(fingerprints(root, unit))
     return out
+
+
+def three_way(base, main, worktree):
+    """Q20 표. 파일 하나의 시작·원래·worktree 지문(없으면 None) → keep-main · take-worktree · same · conflict.
+
+    한쪽만 바뀌면 그쪽을 따르고, 양쪽이 같게 바뀌면 같고, 다르게 바뀌면 충돌이다. 새 파일·지운 파일도 같은 규칙이다.
+    """
+    if main == worktree:
+        return "same"
+    if main == base:
+        return "take-worktree"
+    if worktree == base:
+        return "keep-main"
+    return "conflict"
 
 
 # ---------------------------------------------------------------- 영수증
@@ -449,9 +562,19 @@ def new_receipt(repo, goal, ctx):
         "branch": ctx["branch"],
         "base": {"branch": repo.branch, "commit": repo.head},
         "moved_by_git": ctx["moved_by_git"],
+        "rules": ctx["rules"],   # 끝내기가 만든 뒤 새로 생긴 자리(`**/__pycache__` 등)도 같은 규칙으로 고르게
         "items": ctx["items"],   # 같은 목록이라 apply가 적은 지문도 영수증에 들어간다
         "done": [],
     })
+
+
+def rule_json(rule):
+    return {"mode": rule.mode, "pattern": rule.pattern, "line": rule.line}
+
+
+def receipt_matchers(receipt):
+    return [Matcher(Rule(r["mode"], r["pattern"], r["line"]), receipt["goal"])
+            for r in receipt.data.get("rules", [])]
 
 
 def receipt_item(item):
@@ -482,10 +605,12 @@ def status_entries(cwd, *args):
 
 
 def worktree_uncommitted(repo, receipt):
-    """worktree의 미커밋 작업. 목록 항목(링크·사본·옮긴 폴더, 만들 때 없던 항목 포함)은 커밋할 대상이 아니라 뺀다."""
+    """worktree의 미커밋 작업. 목록 항목(링크·사본·옮긴 폴더, 만들 때 없던 항목 포함)과
+    목록 줄로 보면 skip인 새 파일은 커밋할 대상이 아니라 뺀다."""
     items = [i["path"] for i in receipt["items"]]
+    matchers = receipt_matchers(receipt)
     return [path for xy, path in status_entries(repo.top, "--untracked-files=all")
-            if not (xy == "??" and covered(path, items))]
+            if not (xy == "??" and (covered(path, items) or skipped_by_rule(matchers, path)))]
 
 
 def worktree_path(repo, goal):
@@ -556,10 +681,8 @@ def plan_create(repo, rules, items, goal):
     wt = worktree_path(repo, goal)
     br = branch_name(goal)
     listed = [i for i in items if i.listed]
-    later = sorted(i.path for i in listed if i.mode in ("sync", "sync-empty"))
-    if later:
-        raise NotImplementedError("sync·sync-empty 방식은 아직 처리하지 못한다: " + ", ".join(later))
     present = [i.path for i in listed if not i.missing]
+    matchers = [Matcher(r, goal) for r in rules.rules]
     # 목록 항목은 git 방식으로 옮기지 않는다(stash에서 뺀다)
     moved = [p for xy, p in status_entries(repo.main, "--untracked-files=all")
              if not (xy == "??" and covered(p, present))]
@@ -579,6 +702,11 @@ def plan_create(repo, rules, items, goal):
 
     def place_items(ctx):
         for item in ctx["items"]:
+            if item["mode"] in SYNC_MODES:
+                item["base"] = {}  # 만들 때 없던 sync와 sync-empty는 빈 것에서 시작한다
+            if item["mode"] == "sync-empty":
+                os.makedirs(os.path.join(wt, item["path"]), exist_ok=True)
+                continue
             if item.get("missing") or item["mode"] == "skip":
                 continue
             for unit in units(repo.main, item["path"], item.get("except", [])):
@@ -586,12 +714,22 @@ def plan_create(repo, rules, items, goal):
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 if item["mode"] == "link":
                     os.symlink(src, dst)
-                elif item["mode"] == "copy":
+                elif item["mode"] in ("copy", "sync"):
                     copy_entry(src, dst)
                 elif item["mode"] == "move":
                     move_entry(src, dst)
             if item["mode"] == "copy":
                 item["base"] = item_fingerprints(wt, item)
+            elif item["mode"] == "sync":
+                item["base"] = sync_fingerprints(wt, item, matchers)
+
+    def setup(ctx):
+        # 실패해도 멈추지 않고 종료 코드를 보고한다. 명령 출력은 stderr로 보내 stdout(JSON)을 깨지 않는다
+        for cmd, _ in rules.setup:
+            sys.stderr.flush()
+            done = subprocess.run(cmd, shell=True, cwd=wt, stdin=subprocess.DEVNULL,
+                                  stdout=sys.stderr.fileno(), stderr=sys.stderr.fileno())
+            ctx["setup"].append({"cmd": cmd, "exit": done.returncode})
 
     steps = []
     if moved:
@@ -601,7 +739,10 @@ def plan_create(repo, rules, items, goal):
         steps.append(Step("stash-pop", stash_pop))
     if listed:
         steps.append(Step("items", place_items))
-    ctx = {"worktree": wt, "branch": br, "moved_by_git": moved,
+    if rules.setup:
+        steps.append(Step("setup", setup))
+    ctx = {"worktree": wt, "branch": br, "moved_by_git": moved, "setup": [],
+           "rules": [rule_json(r) for r in rules.rules],
            "items": [receipt_item(i) for i in sorted(listed, key=lambda i: i.path)]}
     return steps, ctx
 
@@ -617,10 +758,25 @@ def plan_finish(repo, receipt):
         if item["mode"] == "move":
             move_back[item["path"]] = move_back_units(wt, item)
             taken += [u for u in move_back[item["path"]] if os.path.lexists(os.path.join(main, u))]
+    # sync 판정은 바꾸기 전에 모두 한다. 이미 반영했으면(restore-items 끝남) worktree 사본이 없으니 다시 하지 않는다
+    matchers = receipt_matchers(receipt)
+    sync_take, conflicts = {}, []
+    if "restore-items" not in receipt["done"]:
+        for item in receipt["items"]:
+            if item["mode"] in SYNC_MODES:
+                sync_take[item["path"]], found = sync_decisions(main, wt, item, matchers)
+                conflicts += found
+    stops = []
     if taken:
-        raise Stopped([Stop("move-target-exists",
-                            "move 항목을 되돌릴 자리에 같은 이름이 이미 있다. 원래 폴더 쪽을 치운 뒤 다시 끝내기를 부른다.",
-                            taken)])
+        stops.append(Stop("move-target-exists",
+                          "move 항목을 되돌릴 자리에 같은 이름이 이미 있다. 원래 폴더 쪽을 치운 뒤 다시 끝내기를 부른다.",
+                          taken))
+    if conflicts:
+        stops.append(Stop("sync-conflict",
+                          "sync 항목에서 원래 폴더와 worktree가 서로 다르게 바꾼 파일이 있다. 한쪽으로 맞춘 뒤 다시 끝내기를 부른다.",
+                          conflicts))
+    if stops:
+        raise Stopped(stops)
 
     def merge(ctx):
         run_git(repo.main, "merge", "-q", "--no-ff", "--no-edit", br)
@@ -629,6 +785,7 @@ def plan_finish(repo, receipt):
     def restore_items(ctx):
         # 다시 불러도 같은 결과가 되게 이미 끝난 것은 건너뛴다. copy_changed는 영수증에 남긴다
         changed = receipt.data.setdefault("copy_changed", [])
+        synced = receipt.data.setdefault("synced", [])
         for item in receipt["items"]:
             mode = item["mode"]
             if mode == "link":
@@ -647,8 +804,13 @@ def plan_finish(repo, receipt):
                     dst = os.path.join(main, unit)
                     os.makedirs(os.path.dirname(dst), exist_ok=True)
                     move_entry(os.path.join(wt, unit), dst)
+            elif mode in SYNC_MODES:
+                take = sync_take[item["path"]]
+                apply_sync(main, wt, item["path"], take)
+                synced += sorted(p for p, _ in take if p not in synced)
 
     def worktree_remove(ctx):
+        clear_items(wt, receipt["items"], matchers)  # 돌려줄 것은 restore-items에서 돌려줬다
         run_git(repo.main, "worktree", "remove", wt)
 
     def branch_delete(ctx):
@@ -689,7 +851,7 @@ def cmd_create(cwd, goal):
     return EXIT_OK, {"ok": True, "worktree": ctx["worktree"], "branch": ctx["branch"],
                      "moved_by_git": ctx["moved_by_git"], "items": shown,
                      "missing": [i["path"] for i in ctx["items"] if i.get("missing")],
-                     "setup": []}
+                     "setup": ctx["setup"]}
 
 
 def cmd_finish(cwd, goal):
@@ -701,7 +863,8 @@ def cmd_finish(cwd, goal):
     apply(steps, ctx, receipt)
     receipt.delete()
     return EXIT_OK, {"ok": True, "merge_commit": receipt.data.get("merge_commit"),
-                     "synced": [], "copy_changed": receipt.data.get("copy_changed", []),
+                     "synced": receipt.data.get("synced", []),
+                     "copy_changed": receipt.data.get("copy_changed", []),
                      "removed": [receipt["worktree"]]}
 
 
@@ -758,8 +921,15 @@ def summarize(command, out):
                 lines.append("목록 항목: %s → %s" % (item["path"], item["mode"]))
         for path in out.get("missing", []):
             lines.append("만들 때 없던 항목: " + path)
+        for run in out.get("setup", []):
+            if run["exit"] == 0:
+                lines.append("준비 명령: " + run["cmd"])
+            else:
+                lines.append("준비 명령 실패(종료 코드 %d): %s" % (run["exit"], run["cmd"]))
     if command == "finish" and out.get("ok"):
         lines.append("합쳤다: " + str(out.get("merge_commit")))
+        for path in out.get("synced", []):
+            lines.append("원래 폴더로 돌려준 파일: " + path)
         for path in out.get("copy_changed", []):
             lines.append("바뀐 채로 버린 사본: " + path)
     for stop in out.get("stops", []):
