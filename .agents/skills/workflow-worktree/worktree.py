@@ -24,11 +24,17 @@ class GitError(Exception):
     pass
 
 
-def run_git(cwd, *args):
+def try_git(cwd, *args):
+    """실패해도 예외를 내지 않는다. (종료 코드, stdout, stderr)"""
     out = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
-    if out.returncode != 0:
-        raise GitError("git %s: %s" % (" ".join(args), out.stderr.strip()))
-    return out.stdout
+    return out.returncode, out.stdout, out.stderr
+
+
+def run_git(cwd, *args):
+    code, stdout, stderr = try_git(cwd, *args)
+    if code != 0:
+        raise GitError("git %s: %s" % (" ".join(args), stderr.strip()))
+    return stdout
 
 
 # ---------------------------------------------------------------- 사실 읽기
@@ -389,8 +395,8 @@ def prune_empty_dirs(root, rel, stop):
 SYNC_MODES = ("sync", "sync-empty")
 
 
-def sync_fingerprints(root, item, matchers):
-    """sync 항목의 파일마다 지문. 아래에서 방식이 바뀌는 곳은 뺀다.
+def item_fingerprints(root, item, matchers):
+    """copy·sync 항목의 파일마다 지문. 아래에서 방식이 바뀌는 곳은 뺀다.
 
     except(만들 때 있던 자리)만으로는 만든 뒤 새로 생긴 `**/__pycache__` 같은 자리를 못 빼므로,
     경로마다 영수증에 적은 목록 줄로 다시 고른다.
@@ -416,9 +422,9 @@ def sync_fingerprints(root, item, matchers):
 
 
 def sync_decisions(main, wt, item, matchers):
-    """sync 항목의 파일마다 three_way. (돌려줄 [(경로, worktree 지문)], 충돌 [경로])"""
+    """sync 항목의 파일마다 three_way. (돌려줄 [(경로, worktree 지문)], 충돌 [경로], 판정한 worktree 지문)"""
     base = item.get("base", {})  # 만들 때 없던 항목은 시작 지문이 빈 것이다
-    ours, theirs = sync_fingerprints(main, item, matchers), sync_fingerprints(wt, item, matchers)
+    ours, theirs = item_fingerprints(main, item, matchers), item_fingerprints(wt, item, matchers)
     take, conflicts = [], []
     for path in sorted(set(base) | set(ours) | set(theirs)):
         verdict = three_way(base.get(path), ours.get(path), theirs.get(path))
@@ -426,7 +432,7 @@ def sync_decisions(main, wt, item, matchers):
             take.append((path, theirs.get(path)))
         elif verdict == "conflict":
             conflicts.append(path)
-    return take, conflicts
+    return take, conflicts, theirs
 
 
 def apply_sync(main, wt, item_path, take):
@@ -455,19 +461,32 @@ def skipped_by_rule(matchers, rel):
 
 
 def clear_items(wt, items, matchers):
-    """worktree에 남은 목록 항목(돌려준 sync 사본, 다시 생긴 skip)을 지운다. git이 추적하지 않는 것만 건드린다."""
-    targets = [i["path"] for i in items if i["mode"] in SYNC_MODES + ("skip",)]
-    skips = [m for m in matchers if m.mode == "skip"]
+    """worktree에 남은 목록 항목을 지운다. git이 추적하지 않는 것만 건드린다.
+
+    skip 항목과 skip 규칙에 맞는 경로는 통째로 지운다. sync 사본은 끝내기가 판정할 때 본 내용(`seen`)과
+    지문이 같은 파일만 지운다. 판정 뒤에 고치거나 새로 만든 파일은 돌아가지 않은 작업이라 남기고,
+    그러면 git이 worktree 지우기를 거부한다(remove-refused).
+    """
+    skips = [i["path"] for i in items if i["mode"] == "skip"]
+    syncs = [i["path"] for i in items if i["mode"] in SYNC_MODES]
+    seen = {}
+    for item in items:
+        if item["mode"] in SYNC_MODES:
+            seen.update(item.get("seen", {}))
+    skip_rules = [m for m in matchers if m.mode == "skip"]
     entries = untracked_entries(wt)
 
     def visit(rel):
         full = os.path.join(wt, rel)
-        if covered(rel, targets) or skipped_by_rule(matchers, rel):
+        if covered(rel, skips) or skipped_by_rule(matchers, rel):
             remove_entry(full)
-        elif os.path.isdir(full) and not os.path.islink(full) and (
-                any(is_under(t, rel) for t in targets) or any(m.below(rel.split("/")) for m in skips)):
-            for name in sorted(os.listdir(full)):
-                visit(rel + "/" + name)
+        elif os.path.isdir(full) and not os.path.islink(full):
+            if (covered(rel, syncs) or any(is_under(t, rel) for t in skips + syncs)
+                    or any(m.below(rel.split("/")) for m in skip_rules)):
+                for name in sorted(os.listdir(full)):
+                    visit(rel + "/" + name)
+        elif rel in seen and fingerprints(wt, rel).get(rel) == seen[rel]:
+            os.unlink(full)
 
     for entry in sorted(entries):
         if not any(is_under(entry, other) for other in entries) and os.path.lexists(os.path.join(wt, entry)):
@@ -489,13 +508,6 @@ def fingerprints(root, rel):
         for chunk in iter(lambda: f.read(1 << 16), b""):
             digest.update(chunk)
     return {rel: digest.hexdigest()}
-
-
-def item_fingerprints(root, item):
-    out = {}
-    for unit in units(root, item["path"], item.get("except", [])):
-        out.update(fingerprints(root, unit))
-    return out
 
 
 def three_way(base, main, worktree):
@@ -544,12 +556,44 @@ def receipt_path(repo, goal):
     return os.path.join(repo.common, "workflow-worktree", goal + ".json")
 
 
+RECEIPT_STATES = ("creating", "working", "finishing")
+RECEIPT_KEYS = (("goal", str), ("state", str), ("main", str), ("worktree", str), ("branch", str),
+                ("base", dict), ("moved_by_git", list), ("items", list), ("done", list))
+
+
+def receipt_problem(data, goal):
+    """영수증을 믿고 쓸 수 없는 이유. 쓸 수 있으면 None."""
+    if not isinstance(data, dict):
+        return "JSON 객체가 아니다"
+    if data.get("version") != RECEIPT_VERSION:
+        return "모르는 version %r" % (data.get("version"),)
+    for key, kind in RECEIPT_KEYS:
+        if not isinstance(data.get(key), kind):
+            return "'%s' 칸이 없거나 모양이 다르다" % key
+    if data["state"] not in RECEIPT_STATES:
+        return "모르는 상태 '%s'" % data["state"]
+    if data["goal"] != goal:
+        return "다른 goal('%s')의 영수증이다" % data["goal"]
+    if not isinstance(data["base"].get("branch"), str):
+        return "'base.branch' 칸이 없다"
+    return None
+
+
 def load_receipt(repo, goal):
     path = receipt_path(repo, goal)
     if not os.path.exists(path):
         return None
-    with open(path) as f:
-        return Receipt(path, json.load(f))
+    try:
+        with open(path) as f:
+            data = json.load(f)
+    except ValueError as exc:
+        problem = "JSON으로 읽히지 않는다(%s)" % exc
+    else:
+        problem = receipt_problem(data, goal)
+    if problem:
+        raise Stopped([Stop("receipt-invalid", "영수증을 쓸 수 없다: %s. 내용을 확인하고 고치거나 정리 방법을 정한다." % problem,
+                            [path])])
+    return Receipt(path, data)
 
 
 def new_receipt(repo, goal, ctx):
@@ -604,13 +648,23 @@ def status_entries(cwd, *args):
     return entries
 
 
-def worktree_uncommitted(repo, receipt):
+def worktree_uncommitted(receipt):
     """worktree의 미커밋 작업. 목록 항목(링크·사본·옮긴 폴더, 만들 때 없던 항목 포함)과
     목록 줄로 보면 skip인 새 파일은 커밋할 대상이 아니라 뺀다."""
     items = [i["path"] for i in receipt["items"]]
     matchers = receipt_matchers(receipt)
-    return [path for xy, path in status_entries(repo.top, "--untracked-files=all")
+    return [path for xy, path in status_entries(receipt["worktree"], "--untracked-files=all")
             if not (xy == "??" and (covered(path, items) or skipped_by_rule(matchers, path)))]
+
+
+def check_goal(goal):
+    """goal 이름이 브랜치 `goal/<goal>`, 폴더 `<저장소>-<goal>`, 영수증 `<goal>.json` 이름으로 쓰일 수 있는지.
+    `/`는 git이 받아도 폴더·영수증 위치를 바꾸므로 따로 막는다."""
+    ref = subprocess.run(["git", "check-ref-format", "refs/heads/" + branch_name(goal)],
+                         capture_output=True, text=True)
+    if not goal or "/" in goal or ref.returncode != 0:
+        raise Stopped([Stop("goal-invalid",
+                            "goal 이름 '%s'은 브랜치·폴더 이름으로 쓸 수 없다. 빈칸·`/`·`..`·특수 문자가 없는 이름을 쓴다." % goal)])
 
 
 def worktree_path(repo, goal):
@@ -648,12 +702,20 @@ class Stopped(Exception):
 
 def decide(repo, receipt):
     """Q26 표: 영수증 상태와 지금 위치로 다음 할 일을 고른다. (action, stop 또는 None)"""
+    if repo.in_worktree and (receipt is None or receipt["worktree"] != repo.top):
+        return "stop", Stop("foreign-worktree",
+                            "이 goal을 위해 이 skill이 만든 worktree가 아닌 worktree 안에서 불렀다. 원래 폴더(%s)에서 부른다."
+                            % repo.main, [repo.top])
     if receipt is None:
         return "create", None
     state = receipt["state"]
     if state == "creating":
         return "stop", Stop("create-incomplete", "만들기가 도중에 멈췄다. 끝난 단계를 보고 정리 방법을 정해야 한다.",
                             done=list(receipt["done"]))
+    # 끝내기가 worktree를 지운 뒤라면 없는 것이 맞다
+    if "worktree-remove" not in receipt["done"] and not os.path.isdir(receipt["worktree"]):
+        return "stop", Stop("worktree-missing", "영수증은 있는데 worktree 폴더가 없다. 폴더를 지웠거나 옮겼는지 확인한다.",
+                            [receipt["worktree"]])
     if state == "finishing":
         return "continue-finish", None
     if repo.top == receipt["worktree"]:
@@ -677,7 +739,39 @@ def find_stash(cwd, sha):
     raise GitError("stash %s를 찾지 못했다" % sha)
 
 
+def create_stops(repo, goal):
+    """Q16 검사. 걸린 것을 모두 모아 돌려준다."""
+    wt = worktree_path(repo, goal)
+    br = branch_name(goal)
+    stops = []
+    if try_git(repo.main, "rev-parse", "--verify", "--quiet", "refs/heads/" + br)[0] == 0:
+        stops.append(Stop("branch-exists", "브랜치 '%s'가 이미 있다. 다른 goal 이름을 쓰거나 그 브랜치를 정리한다." % br))
+    if os.path.lexists(wt):
+        stops.append(Stop("folder-exists", "worktree를 만들 폴더가 이미 있다. 다른 goal 이름을 쓰거나 그 폴더를 정리한다.", [wt]))
+    busy = git_busy(repo.top)
+    if busy:
+        stops.append(Stop("git-busy", "이 폴더에서 %s 작업이 진행 중이다. 먼저 끝내거나 취소한다." % "·".join(busy), [repo.top]))
+    return stops
+
+
+BUSY_MARKERS = (("MERGE_HEAD", "merge"), ("rebase-merge", "rebase"), ("rebase-apply", "rebase"),
+                ("CHERRY_PICK_HEAD", "cherry-pick"), ("REVERT_HEAD", "revert"))
+
+
+def git_busy(cwd):
+    """진행 중인 merge·rebase·cherry-pick·revert. stash·merge가 그 위에서 실패하거나 섞인다."""
+    found = []
+    for marker, name in BUSY_MARKERS:
+        path = os.path.join(cwd, run_git(cwd, "rev-parse", "--git-path", marker).strip())
+        if os.path.exists(path) and name not in found:
+            found.append(name)
+    return found
+
+
 def plan_create(repo, rules, items, goal):
+    stops = create_stops(repo, goal)
+    if stops:
+        raise Stopped(stops)
     wt = worktree_path(repo, goal)
     br = branch_name(goal)
     listed = [i for i in items if i.listed]
@@ -718,10 +812,8 @@ def plan_create(repo, rules, items, goal):
                     copy_entry(src, dst)
                 elif item["mode"] == "move":
                     move_entry(src, dst)
-            if item["mode"] == "copy":
-                item["base"] = item_fingerprints(wt, item)
-            elif item["mode"] == "sync":
-                item["base"] = sync_fingerprints(wt, item, matchers)
+            if item["mode"] in ("copy", "sync"):
+                item["base"] = item_fingerprints(wt, item, matchers)
 
     def setup(ctx):
         # 실패해도 멈추지 않고 종료 코드를 보고한다. 명령 출력은 stderr로 보내 stdout(JSON)을 깨지 않는다
@@ -747,26 +839,58 @@ def plan_create(repo, rules, items, goal):
     return steps, ctx
 
 
+def merge_preview(cwd, branch):
+    """작업 폴더를 건드리지 않고 HEAD에 branch를 합쳐 본다. 충돌 나는 파일 목록(없으면 빈 목록).
+    원래 폴더의 미커밋 변경과 겹치는 것은 못 잡는다. 그건 merge가 스스로 거부한다(main-dirty-overlap)."""
+    code, out, err = try_git(cwd, "merge-tree", "--write-tree", "--name-only", "--no-messages", "-z", "HEAD", branch)
+    if code == 0:
+        return []
+    if code == 1:
+        return sorted(set(p for p in out.split("\0")[1:] if p))  # 첫 칸은 합친 tree id
+    raise GitError("git merge-tree: %s" % err.strip())
+
+
+def git_listed_paths(text):
+    """git 오류 메시지에서 탭으로 들여 쓴 파일 목록(언어 설정과 관계없이 같은 모양)."""
+    return [line.strip() for line in text.splitlines() if line.startswith("\t") and line.strip()]
+
+
 def plan_finish(repo, receipt):
     wt = receipt["worktree"]
     br = receipt["branch"]
     main = receipt["main"]
+    done = receipt["done"]
+    stops = []
+    # merge 뒤(다시 부르기)에는 worktree의 새 작업이 합쳐지지 않으므로 worktree 지우기가 거부하게 둔다
+    dirty = worktree_uncommitted(receipt) if "merge" not in done else []
+    if dirty:
+        stops.append(Stop("worktree-dirty", "worktree에 커밋 안 한 작업이 있다. worktree에서 커밋하거나 치운 뒤 다시 끝내기를 부른다.",
+                          dirty))
+    base = receipt["base"]["branch"]
+    if repo.branch != base:
+        stops.append(Stop("base-moved", "원래 폴더가 만들 때의 브랜치 '%s'가 아니라 '%s'에 있다. '%s'로 돌아간 뒤 다시 끝내기를 부른다."
+                          % (base, repo.branch or "(브랜치 없음)", base)))
+    elif "merge" not in done:  # 다른 브랜치를 기준으로 한 미리보기는 뜻이 없다
+        conflicted = merge_preview(repo.main, br)
+        if conflicted:
+            stops.append(Stop("merge-conflict",
+                              "합치면 충돌이 난다. worktree에서 '%s'를 먼저 merge해 충돌을 풀고 커밋한 뒤 다시 끝내기를 부른다." % base,
+                              conflicted))
 
     move_back = {}
     taken = []
     for item in receipt["items"]:
-        if item["mode"] == "move":
+        if item["mode"] == "move" and "restore-items" not in done:  # 이미 되돌렸으면 다시 옮기지 않는다
             move_back[item["path"]] = move_back_units(wt, item)
             taken += [u for u in move_back[item["path"]] if os.path.lexists(os.path.join(main, u))]
     # sync 판정은 바꾸기 전에 모두 한다. 이미 반영했으면(restore-items 끝남) worktree 사본이 없으니 다시 하지 않는다
     matchers = receipt_matchers(receipt)
-    sync_take, conflicts = {}, []
-    if "restore-items" not in receipt["done"]:
+    sync_take, sync_seen, conflicts = {}, {}, []
+    if "restore-items" not in done:
         for item in receipt["items"]:
             if item["mode"] in SYNC_MODES:
-                sync_take[item["path"]], found = sync_decisions(main, wt, item, matchers)
+                sync_take[item["path"]], found, sync_seen[item["path"]] = sync_decisions(main, wt, item, matchers)
                 conflicts += found
-    stops = []
     if taken:
         stops.append(Stop("move-target-exists",
                           "move 항목을 되돌릴 자리에 같은 이름이 이미 있다. 원래 폴더 쪽을 치운 뒤 다시 끝내기를 부른다.",
@@ -779,7 +903,16 @@ def plan_finish(repo, receipt):
         raise Stopped(stops)
 
     def merge(ctx):
-        run_git(repo.main, "merge", "-q", "--no-ff", "--no-edit", br)
+        code, out, err = try_git(repo.main, "merge", "-q", "--no-ff", "--no-edit", br)
+        if code != 0:
+            text = (err + out).strip()
+            paths = git_listed_paths(text)
+            # 시작도 하지 않고 거부했다(HEAD 그대로, merge 진행 중 아님): 원래 폴더의 미커밋 변경과 겹침
+            if paths and not git_busy(repo.main) and run_git(repo.main, "rev-parse", "HEAD").strip() == repo.head:
+                raise Stopped([Stop("main-dirty-overlap",
+                                    "원래 폴더의 커밋 안 한 변경이 합칠 내용과 겹쳐 git이 merge를 거부했다. 원래 폴더는 그대로다. "
+                                    "그 변경을 어떻게 할지 정한 뒤 다시 끝내기를 부른다.", paths, git=text)])
+            raise GitError("git merge: %s" % text)
         receipt["merge_commit"] = run_git(repo.main, "rev-parse", "HEAD").strip()
 
     def restore_items(ctx):
@@ -794,7 +927,7 @@ def plan_finish(repo, receipt):
                     if os.path.islink(full) and os.readlink(full) == os.path.join(main, unit):
                         os.unlink(full)
             elif mode == "copy":
-                now, base = item_fingerprints(wt, item), item.get("base", {})
+                now, base = item_fingerprints(wt, item, matchers), item.get("base", {})  # 새 skip 자리는 빠진다
                 changed += sorted(p for p in set(now) | set(base)
                                   if now.get(p) != base.get(p) and p not in changed)
                 for unit in units(wt, item["path"], item.get("except", [])):
@@ -808,10 +941,16 @@ def plan_finish(repo, receipt):
                 take = sync_take[item["path"]]
                 apply_sync(main, wt, item["path"], take)
                 synced += sorted(p for p, _ in take if p not in synced)
+                item["seen"] = sync_seen[item["path"]]  # worktree 지우기가 이 내용 그대로인 사본만 지운다
 
     def worktree_remove(ctx):
         clear_items(wt, receipt["items"], matchers)  # 돌려줄 것은 restore-items에서 돌려줬다
-        run_git(repo.main, "worktree", "remove", wt)
+        code, out, err = try_git(repo.main, "worktree", "remove", wt)
+        if code != 0:  # 강제로 지우지 않고 멈춘다(C3). 남은 것을 보여 준다
+            left = [p for _, p in status_entries(wt, "--untracked-files=all")]
+            raise Stopped([Stop("remove-refused",
+                                "worktree에 예상 못 한 파일이 남아 git이 worktree 지우기를 거부했다. 합치기는 끝났다. "
+                                "남은 파일을 옮기거나 치운 뒤 다시 끝내기를 부른다.", left, git=(err + out).strip())])
 
     def branch_delete(ctx):
         run_git(repo.main, "branch", "-q", "-d", br)
@@ -839,6 +978,10 @@ def apply(steps, ctx, receipt):
 
 def cmd_create(cwd, goal):
     repo = read_repo(cwd)
+    check_goal(goal)
+    _, stop = decide(repo, load_receipt(repo, goal))  # 영수증이 있으면 아래 branch·folder 검사가 걸린다
+    if stop is not None:
+        raise Stopped([stop])
     rules = load_rules(repo)
     items = inventory(repo, rules, goal)
     steps, ctx = plan_create(repo, rules, items, goal)
@@ -856,7 +999,17 @@ def cmd_create(cwd, goal):
 
 def cmd_finish(cwd, goal):
     repo = read_repo(cwd)
+    check_goal(goal)
     receipt = load_receipt(repo, goal)
+    _, stop = decide(repo, receipt)
+    if stop is not None:
+        raise Stopped([stop])
+    if receipt is None:
+        raise Stopped([Stop("receipt-missing", "이 goal의 영수증이 없다. 이 skill로 만든 worktree가 아니거나 이미 끝냈다.",
+                            [receipt_path(repo, goal)])])
+    if repo.in_worktree:  # worktree 세션은 원래 폴더·.git에 쓰지 못할 수 있다(C3). 영수증도 건드리지 않는다
+        raise Stopped([Stop("run-from-main", "끝내기는 원래 폴더에서 부른다. 세션을 원래 폴더로 옮긴 뒤 다시 부른다.",
+                            [receipt["main"]])])
     receipt["state"] = "finishing"
     receipt.save()
     steps, ctx = plan_finish(repo, receipt)
@@ -870,6 +1023,7 @@ def cmd_finish(cwd, goal):
 
 def cmd_status(cwd, goal):
     repo = read_repo(cwd)
+    check_goal(goal)
     rules = load_rules(repo)
     receipt = load_receipt(repo, goal)
     action, stop = decide(repo, receipt)
@@ -880,7 +1034,7 @@ def cmd_status(cwd, goal):
     if action == "create":
         out["unlisted"] = unlisted(repo, inventory(repo, rules, goal))
     if action == "finish":
-        out["uncommitted"] = worktree_uncommitted(repo, receipt)
+        out["uncommitted"] = worktree_uncommitted(receipt)
     if stop is not None:
         out["stops"] = [stop.to_json()]
         return EXIT_STOP, out
@@ -936,6 +1090,10 @@ def summarize(command, out):
         lines.append("멈춤 [%s] %s" % (stop["code"], stop["message"]))
         for path in stop.get("paths", []):
             lines.append("  - " + path)
+        if stop.get("done") is not None:
+            lines.append("  끝난 단계: " + (", ".join(stop["done"]) or "(없음)"))
+        for line in stop.get("git", "").splitlines():
+            lines.append("  git: " + line)
     return "\n".join(lines)
 
 

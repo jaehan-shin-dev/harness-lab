@@ -3,8 +3,10 @@
 바깥 seam(status·create·finish 명령과 목록 파일)을 임시 폴더의 진짜 git 저장소에서 시험한다.
 내부 seam은 3-way 판정(`three_way`) 하나다.
 """
+import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -17,12 +19,33 @@ SCRIPT = os.path.join(os.path.dirname(HERE), "worktree.py")
 sys.path.insert(0, os.path.dirname(HERE))
 import worktree  # noqa: E402  내부 seam three_way만 쓴다
 
+# design.md "데이터 모양" 5의 stop code 목록. SKILL.md의 해결 표가 이 code로 찾는다
+STOP_CODES = {
+    "not-git-repo", "goal-invalid", "branch-exists", "folder-exists", "git-busy", "list-invalid",
+    "worktree-dirty", "base-moved", "sync-conflict", "move-target-exists", "merge-conflict",
+    "main-dirty-overlap", "remove-refused", "run-from-main", "receipt-missing",
+    "receipt-invalid", "worktree-missing", "create-incomplete", "foreign-worktree",
+}
+
 
 def git(cwd, *args):
     out = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True)
     if out.returncode != 0:
         raise AssertionError("git %s failed: %s" % (" ".join(args), out.stderr))
     return out.stdout
+
+
+def git_may_fail(cwd, *args):
+    """충돌로 멈추는 merge·rebase처럼 실패가 예상되는 git 명령."""
+    return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True,
+                          env=dict(os.environ, GIT_EDITOR="true")).returncode
+
+
+def check_stop_shape(stop):
+    """D9: 모든 Stop에 영어 code, 한국어 message, paths 목록이 있다."""
+    assert stop.get("code") in STOP_CODES, "unknown stop code: %r" % stop
+    assert re.search("[가-힣]", stop.get("message", "")), "message not Korean: %r" % stop
+    assert isinstance(stop.get("paths"), list), "paths missing: %r" % stop
 
 
 class Repo:
@@ -71,7 +94,92 @@ class Repo:
             data = json.loads(out.stdout)
         except ValueError:
             raise AssertionError("not JSON (exit %d): %r %r" % (out.returncode, out.stdout, out.stderr))
+        for stop in data.get("stops", []):
+            check_stop_shape(stop)
         return out.returncode, data
+
+    def receipt_file(self, goal="goal-x"):
+        return os.path.join(self.path, ".git", "workflow-worktree", goal + ".json")
+
+    def snapshot(self):
+        """E6 전후 비교: 브랜치·worktree 목록·stash·폴더마다 git status, 부모 폴더 아래 파일 목록과 내용 지문, 영수증."""
+        files = {}
+        for dirpath, dirnames, names in os.walk(self.parent):
+            dirnames[:] = [d for d in dirnames if d != ".git"]
+            for name in dirnames + names:
+                full = os.path.join(dirpath, name)
+                rel = os.path.relpath(full, self.parent)
+                if os.path.islink(full):
+                    files[rel] = "link:" + os.readlink(full)
+                elif os.path.isdir(full):
+                    files[rel] = "dir"
+                else:
+                    with open(full, "rb") as f:
+                        files[rel] = hashlib.sha256(f.read()).hexdigest()
+        worktrees = git(self.path, "worktree", "list", "--porcelain")
+        status = {}
+        for line in worktrees.splitlines():
+            if line.startswith("worktree ") and os.path.isdir(line[len("worktree "):]):
+                root = line[len("worktree "):]
+                status[root] = git(root, "status", "--porcelain", "--untracked-files=all")
+        receipt = None
+        if os.path.exists(self.receipt_file()):
+            with open(self.receipt_file()) as f:
+                receipt = f.read()
+        return {"branches": git(self.path, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads"),
+                "worktrees": worktrees, "stash": git(self.path, "stash", "list", "--format=%H"),
+                "status": status, "files": files, "receipt": receipt}
+
+
+class StopTestCase(unittest.TestCase):
+    """멈춤마다 종료 코드 2와 code, 그리고 E6 전후 상태 같음을 확인한다."""
+
+    def setUp(self):
+        self.repo = Repo()
+        self.addCleanup(self.repo.cleanup)
+        self.wt = self.repo.wt_path("goal-x")
+
+    def assert_stops(self, code, *args, cwd=None, finishing=False):
+        """명령이 code로 멈추고 아무것도 바꾸지 않았는지. finishing이면 영수증 상태가 finishing으로 바뀐 것만 허용한다."""
+        before = self.repo.snapshot()
+        exit_code, out = self.repo.run(*args, cwd=cwd)
+        after = self.repo.snapshot()
+        self.assertEqual(exit_code, 2, out)
+        self.assertIn(code, [s["code"] for s in out["stops"]], out)
+        if finishing:
+            receipt = json.loads(after["receipt"])
+            self.assertEqual(receipt["state"], "finishing")
+            receipt["state"] = json.loads(before["receipt"])["state"]
+            after["receipt"] = json.dumps(receipt)
+            before["receipt"] = json.dumps(json.loads(before["receipt"]))
+        self.assertEqual(after, before)
+        return [s for s in out["stops"] if s["code"] == code][0]
+
+    def commit_in_wt(self, rel="goal.txt", text="goal work\n"):
+        self.repo.write(rel, text, root=self.wt)
+        git(self.wt, "add", rel)
+        git(self.wt, "commit", "-q", "-m", "goal work")
+
+    def make_conflict(self):
+        """worktree와 원래 폴더가 a.txt를 서로 다르게 고쳐 커밋한다."""
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt("a.txt", "a\nfrom worktree\n")
+        self.repo.write("a.txt", "a\nfrom main\n")
+        git(self.repo.path, "commit", "-q", "-am", "main work")
+
+    def receipt(self):
+        with open(self.repo.receipt_file()) as f:
+            return json.load(f)
+
+    def read(self, rel, root=None):
+        with open(os.path.join(root or self.repo.path, rel)) as f:
+            return f.read()
+
+    def leave_unexpected_file(self):
+        """link 항목 docs의 링크를 worktree에서 실제 폴더로 바꿔 둔다. 목록 항목 아래라 미커밋 검사는 통과하고
+        링크가 아니라 지워지지 않으므로 worktree 지우기 때 남는다."""
+        os.unlink(os.path.join(self.wt, "docs"))
+        self.repo.write("docs/own.md", "made in worktree instead of the link\n", root=self.wt)
 
 
 class CreateTest(unittest.TestCase):
@@ -198,6 +306,18 @@ class OutputTest(unittest.TestCase):
                              cwd=self.repo.path, capture_output=True, text=True)
         self.assertEqual(out.returncode, 0, out.stderr)
         self.assertIn("준비 명령 실패(종료 코드 3): exit 3", out.stdout)
+
+    def test_default_output_shows_git_message_of_refusal(self):
+        self.repo.run("create", "goal-x")
+        wt = self.repo.wt_path("goal-x")
+        self.repo.write("a.txt", "a\nfrom worktree\n", root=wt)
+        git(wt, "commit", "-q", "-am", "goal work")
+        self.repo.write("a.txt", "a\nnot committed in main\n")
+        out = subprocess.run([sys.executable, SCRIPT, "finish", "goal-x"],
+                             cwd=self.repo.path, capture_output=True, text=True)
+        self.assertEqual(out.returncode, 2, out.stderr)
+        self.assertIn("멈춤 [main-dirty-overlap]", out.stdout)
+        self.assertIn("  git: \ta.txt", out.stdout)  # git 메시지의 파일 줄(언어 설정과 관계없이 탭으로 들여 쓴다)
 
     def test_unexpected_git_failure_is_script_error(self):
         empty = os.path.join(self.repo.parent, "empty")
@@ -386,6 +506,18 @@ class ModeTest(unittest.TestCase):
         self.assertFalse(os.path.lexists(self.wt))
         self.assertEqual(self.read("notes/a.txt"), "a\n")
         self.assertEqual(os.readlink(os.path.join(self.repo.path, "alias")), "shared")
+
+    def test_new_path_under_copy_with_skip_rule_is_not_reported_as_copy_changed(self):
+        self.repo.list_file("copy notes\nskip **/__pycache__\n")
+        self.repo.write("notes/a.txt", "a\n")
+        self.repo.run("create", "goal-x")
+        self.repo.write("notes/a.txt", "a\nchanged in worktree\n", root=self.wt)
+        self.repo.write("notes/__pycache__/a.pyc", "made after create\n", root=self.wt)
+        self.commit_in_wt("goal.txt", "goal work\n")
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["copy_changed"], ["notes/a.txt"])
+        self.assertFalse(os.path.lexists(self.wt))
 
     def test_move_takes_item_out_of_main_and_brings_edits_back_on_finish(self):
         self.repo.list_file("move notes\n")
@@ -816,6 +948,311 @@ class SyncTest(unittest.TestCase):
         self.assertEqual(self.read("skill-eval/tests/__pycache__/t.pyc"), "new pyc in main\n")
         self.assertEqual(self.read("skill-eval/.venv/bin/python"), "venv in main\n")
         self.assertFalse(os.path.lexists(self.wt))
+
+
+class CreateStopTest(StopTestCase):
+    """Q16: 만들기는 바꾸기 전에 모두 검사하고, 걸리면 종료 코드 2로 멈추며 아무것도 바꾸지 않는다."""
+
+    def setUp(self):
+        super().setUp()
+        self.repo.write("new.txt", "uncommitted work\n")  # 멈추면 stash되지 않고 그대로여야 한다
+
+    def test_create_outside_git_repo_stops_with_not_git_repo(self):
+        plain = os.path.join(self.repo.parent, "plain")
+        self.repo.write("note.txt", "n\n", root=plain)
+        self.assert_stops("not-git-repo", "create", "goal-x", cwd=plain)
+
+    def test_unusable_goal_name_stops_with_goal_invalid(self):
+        for goal in ["", "..", "a/b", "a b"]:
+            with self.subTest(goal=goal):
+                self.assert_stops("goal-invalid", "create", goal)
+        self.assert_stops("goal-invalid", "status", "..")
+
+    def test_existing_goal_branch_stops_with_branch_exists(self):
+        git(self.repo.path, "branch", "goal/goal-x")
+        self.assert_stops("branch-exists", "create", "goal-x")
+
+    def test_existing_sibling_folder_stops_with_folder_exists(self):
+        self.repo.write("keep.txt", "someone else's folder\n", root=self.wt)
+        stop = self.assert_stops("folder-exists", "create", "goal-x")
+        self.assertEqual(stop["paths"], [self.wt])
+
+    def start_conflicting(self, *command):
+        """main과 side가 a.txt를 다르게 고친 뒤 command(merge·rebase)를 충돌로 멈춰 둔다."""
+        git(self.repo.path, "switch", "-q", "-c", "side")
+        self.repo.write("a.txt", "from side\n")
+        git(self.repo.path, "commit", "-q", "-am", "side")
+        git(self.repo.path, "switch", "-q", "main")
+        self.repo.write("a.txt", "from main\n")
+        git(self.repo.path, "commit", "-q", "-am", "main")
+        self.assertNotEqual(git_may_fail(self.repo.path, *command), 0)
+
+    def test_merge_in_progress_stops_with_git_busy(self):
+        os.remove(os.path.join(self.repo.path, "new.txt"))  # merge 중에는 일반 작업이 없어도 멈춰야 한다
+        self.start_conflicting("merge", "side")
+        self.assert_stops("git-busy", "create", "goal-x")
+
+    def test_rebase_in_progress_stops_with_git_busy(self):
+        os.remove(os.path.join(self.repo.path, "new.txt"))  # rebase는 미커밋 작업이 있으면 시작하지 않는다
+        self.start_conflicting("rebase", "side")
+        self.assert_stops("git-busy", "create", "goal-x")
+
+    def test_inside_worktree_this_skill_did_not_make_stops_with_foreign_worktree(self):
+        other = os.path.join(self.repo.parent, "other")
+        git(self.repo.path, "worktree", "add", "-q", "-b", "other", other, "HEAD")
+        self.repo.write("work.txt", "work in other worktree\n", root=other)
+        stop = self.assert_stops("foreign-worktree", "create", "goal-x", cwd=other)
+        self.assertEqual(stop["paths"], [other])
+        self.assert_stops("foreign-worktree", "status", "goal-x", cwd=other)
+
+
+@unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root는 읽기 권한을 무시한다")
+class CreateFailsMidwayTest(StopTestCase):
+    """D9: 만들기의 한 단계가 예상 밖으로 실패하면 영수증이 creating으로 남고 다음 부르기가 create-incomplete로 멈춘다.
+    실패는 진짜 조건으로 만든다: copy 항목의 원본을 읽을 수 없게 해 items 단계가 실패한다."""
+
+    def test_failed_items_step_leaves_creating_receipt_and_status_shows_done_steps(self):
+        self.repo.list_file("copy secret.txt\n")
+        secret = os.path.join(self.repo.path, "secret.txt")
+        self.repo.write("secret.txt", "s\n")
+        os.chmod(secret, 0)
+        self.addCleanup(os.chmod, secret, 0o644)
+        self.repo.write("new.txt", "uncommitted work\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 1, out)  # 예상 못 한 실패는 script 오류
+        os.chmod(secret, 0o644)  # 원인을 고쳐도 반쯤 만든 상태는 그대로 보고되어야 한다
+        self.assertEqual(self.receipt()["state"], "creating")
+        done = ["stash", "worktree-add", "stash-pop"]
+        self.assertEqual(self.receipt()["done"], done)
+
+        code, out = self.repo.run("status", "goal-x")
+        self.assertEqual(code, 2, out)
+        self.assertEqual(out["action"], "stop")
+        self.assertEqual(out["stops"][0]["code"], "create-incomplete")
+        self.assertEqual(out["stops"][0]["done"], done)
+        for command in ("create", "finish"):
+            with self.subTest(command=command):
+                stop = self.assert_stops("create-incomplete", command, "goal-x")
+                self.assertEqual(stop["done"], done)
+
+
+class FinishStopTest(StopTestCase):
+    """Q17: 끝내기는 바꾸기 전에 모두 검사한다. 멈추면 영수증 상태가 finishing으로 바뀌는 것 말고는 그대로다."""
+
+    def test_finish_without_receipt_stops_with_receipt_missing(self):
+        self.repo.write("new.txt", "uncommitted work\n")
+        stop = self.assert_stops("receipt-missing", "finish", "goal-x")
+        self.assertEqual(stop["paths"], [self.repo.receipt_file()])
+
+    def test_finish_inside_worktree_stops_with_run_from_main(self):
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        stop = self.assert_stops("run-from-main", "finish", "goal-x", cwd=self.wt)  # 영수증도 그대로
+        self.assertEqual(stop["paths"], [self.repo.path])
+
+    def test_receipt_without_worktree_folder_stops_with_worktree_missing(self):
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        shutil.rmtree(self.wt)
+        stop = self.assert_stops("worktree-missing", "finish", "goal-x")  # 영수증도 그대로
+        self.assertEqual(stop["paths"], [self.wt])
+        self.assert_stops("worktree-missing", "status", "goal-x")
+
+    def test_unreadable_receipt_stops_with_receipt_invalid(self):
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        with open(self.repo.receipt_file()) as f:
+            good = json.load(f)
+        broken = ['{"version": 1, "goal": ', json.dumps(dict(good, version=99)),
+                  json.dumps(dict(good, state="paused")), json.dumps({k: v for k, v in good.items() if k != "done"})]
+        for text in broken:
+            with self.subTest(receipt=text[:40]):
+                with open(self.repo.receipt_file(), "w") as f:
+                    f.write(text)
+                stop = self.assert_stops("receipt-invalid", "finish", "goal-x")
+                self.assertEqual(stop["paths"], [self.repo.receipt_file()])
+                self.assert_stops("receipt-invalid", "status", "goal-x")
+
+    def test_uncommitted_work_in_worktree_stops_with_worktree_dirty(self):
+        self.repo.list_file("link docs\n")
+        self.repo.write("docs/a.md", "a\n")
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.repo.write("a.txt", "a\nnot committed\n", root=self.wt)
+        self.repo.write("work.txt", "not committed\n", root=self.wt)
+        stop = self.assert_stops("worktree-dirty", "finish", "goal-x", finishing=True)
+        self.assertEqual(stop["paths"], ["a.txt", "work.txt"])  # 목록 항목 docs는 미커밋 작업이 아니다
+
+    def test_main_on_other_branch_stops_with_base_moved(self):
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        git(self.repo.path, "switch", "-q", "-c", "elsewhere")
+        stop = self.assert_stops("base-moved", "finish", "goal-x", finishing=True)
+        self.assertIn("main", stop["message"])
+        self.assertIn("elsewhere", stop["message"])
+
+    def test_conflicting_merge_preview_stops_with_merge_conflict(self):
+        self.make_conflict()
+        stop = self.assert_stops("merge-conflict", "finish", "goal-x", finishing=True)
+        self.assertEqual(stop["paths"], ["a.txt"])
+
+
+class GitRefusesTest(StopTestCase):
+    """Q17: 미리 검사로 못 잡고 git이 스스로 거부하는 경우. --force 없이 멈추고 git의 메시지를 담는다."""
+
+    def test_main_uncommitted_change_overlapping_merge_stops_with_main_dirty_overlap(self):
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt("a.txt", "a\nfrom worktree\n")
+        self.repo.write("a.txt", "a\nanother session, not committed\n")
+        head = self.repo.head()
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        stop = out["stops"][0]
+        self.assertEqual(stop["code"], "main-dirty-overlap")
+        self.assertEqual(stop["paths"], ["a.txt"])
+        self.assertIn("a.txt", stop["git"])
+        self.assertEqual(self.read("a.txt"), "a\nanother session, not committed\n")
+        self.assertEqual(self.repo.head(), head)
+        self.assertNotIn("merge", self.receipt()["done"])
+        self.assertEqual(git(self.repo.path, "status", "--porcelain"), " M a.txt\n")
+
+    def test_sync_path_also_committed_on_goal_branch_stops_without_half_change(self):
+        self.repo.list_file("sync tools\n")
+        self.repo.write("tools/t.txt", "t\n")
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt("tools/t.txt", "t\nedited and committed in worktree\n")  # 원래 폴더에는 untracked 사본이 있다
+        head = self.repo.head()
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        stop = out["stops"][0]
+        self.assertEqual(stop["code"], "main-dirty-overlap")
+        self.assertEqual(stop["paths"], ["tools/t.txt"])
+        self.assertIn("tools/t.txt", stop["git"])
+        self.assertEqual(self.read("tools/t.txt"), "t\n")
+        self.assertEqual(self.read("tools/t.txt", root=self.wt), "t\nedited and committed in worktree\n")
+        self.assertEqual(self.repo.head(), head)
+        self.assertEqual(self.receipt()["done"], ["worktree-add", "items"])
+        self.assertNotIn("synced", self.receipt())
+
+    def test_unexpected_leftover_stops_with_remove_refused_and_keeps_worktree(self):
+        self.repo.list_file("link docs\n")
+        self.repo.write("docs/a.md", "a\n")
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.leave_unexpected_file()
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        stop = out["stops"][0]
+        self.assertEqual(stop["code"], "remove-refused")
+        self.assertEqual(stop["paths"], ["docs/own.md"])
+        self.assertIn("git", stop)
+        self.assertEqual(self.read("docs/own.md", root=self.wt), "made in worktree instead of the link\n")
+        self.assertIn("worktree " + self.wt, git(self.repo.path, "worktree", "list", "--porcelain"))
+        self.assertNotEqual(git(self.repo.path, "branch", "--list", "goal/goal-x"), "")
+        self.assertEqual(self.receipt()["done"][-2:], ["merge", "restore-items"])
+        self.assertEqual(self.read("docs/a.md"), "a\n")
+
+
+class ResumeTest(StopTestCase):
+    """Q25·E7: 멈춘 원인을 고치고 다시 부르면 처음부터 다시 검사하고 끝난 단계는 건너뛰어 끝까지 간다."""
+
+    def log(self):
+        return git(self.repo.path, "log", "--format=%H %P", "main")
+
+    def test_finish_again_after_remove_refused_does_not_merge_twice(self):
+        self.repo.list_file("link docs\n")
+        self.repo.write("docs/a.md", "a\n")
+        base = self.repo.head()
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.leave_unexpected_file()
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        merged = self.log()
+
+        shutil.rmtree(os.path.join(self.wt, "docs"))  # 남은 파일을 치운다
+        code, out = self.repo.run("status", "goal-x")
+        self.assertEqual(out["action"], "continue-finish")
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(self.log(), merged)  # merge를 다시 하지 않았다
+        self.assertEqual(git(self.repo.path, "rev-list", "--merges", "--count", base + "..HEAD").strip(), "1")
+        self.assertEqual(out["merge_commit"], self.repo.head())
+        self.assertFalse(os.path.lexists(self.wt))
+        self.assertEqual(git(self.repo.path, "branch", "--list", "goal/goal-x"), "")
+        self.assertFalse(os.path.exists(self.repo.receipt_file()))
+        self.assertEqual(self.read("docs/a.md"), "a\n")
+
+    def test_finish_again_after_resolving_merge_conflict_in_worktree_goes_to_the_end(self):
+        self.make_conflict()
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        self.assertEqual(out["stops"][0]["code"], "merge-conflict")
+        main_before = self.repo.head()
+
+        # Q25: worktree에서 원래 브랜치를 먼저 merge해 충돌을 풀고 커밋한다
+        self.assertNotEqual(git_may_fail(self.wt, "merge", "main"), 0)
+        self.repo.write("a.txt", "a\nfrom main\nfrom worktree\n", root=self.wt)
+        git(self.wt, "add", "a.txt")
+        git(self.wt, "commit", "-q", "--no-edit")
+        branch_tip = self.repo.head(self.wt)
+        self.assertEqual(self.log(), git(self.repo.path, "log", "--format=%H %P", main_before))
+
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        parents = git(self.repo.path, "rev-list", "--parents", "-n", "1", "HEAD").split()
+        self.assertEqual(parents, [out["merge_commit"], main_before, branch_tip])
+        self.assertEqual(self.read("a.txt"), "a\nfrom main\nfrom worktree\n")
+        self.assertFalse(os.path.lexists(self.wt))
+        self.assertEqual(git(self.repo.path, "branch", "--list", "goal/goal-x"), "")
+        self.assertFalse(os.path.exists(self.repo.receipt_file()))
+
+    def test_move_item_made_again_after_restore_is_remove_refused_not_move_target_exists(self):
+        self.repo.list_file("link docs\nmove notes\n")
+        self.repo.write("docs/a.md", "a\n")
+        self.repo.write("notes/n.txt", "n\n")
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.leave_unexpected_file()
+        code, out = self.repo.run("finish", "goal-x")  # move는 되돌린 뒤 멈춘다
+        self.assertEqual(out["stops"][0]["code"], "remove-refused")
+        self.assertEqual(self.read("notes/n.txt"), "n\n")
+
+        shutil.rmtree(os.path.join(self.wt, "docs"))
+        self.repo.write("notes/late.txt", "made after the stop\n", root=self.wt)
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        self.assertEqual([s["code"] for s in out["stops"]], ["remove-refused"])
+        self.assertEqual(out["stops"][0]["paths"], ["notes/late.txt"])
+
+    def test_sync_edits_made_after_restore_are_not_cleared_on_finish_again(self):
+        self.repo.list_file("link docs\nsync tools\n")
+        self.repo.write("docs/a.md", "a\n")
+        self.repo.write("tools/edit.txt", "e\n")
+        self.repo.write("tools/keep.txt", "k\n")
+        self.repo.run("create", "goal-x")
+        self.repo.write("tools/edit.txt", "e\nreturned from worktree\n", root=self.wt)
+        self.commit_in_wt()
+        self.leave_unexpected_file()
+        code, out = self.repo.run("finish", "goal-x")  # restore-items까지 끝나고 멈춘다
+        self.assertEqual(code, 2, out)
+        self.assertEqual(out["stops"][0]["code"], "remove-refused")
+        self.assertEqual(self.read("tools/edit.txt"), "e\nreturned from worktree\n")
+
+        # 다시 부르기 전에 worktree의 sync 파일을 고치고 새로 만든다. 돌려준 것과 같은 사본은 지워도 된다
+        shutil.rmtree(os.path.join(self.wt, "docs"))
+        self.repo.write("tools/edit.txt", "e\nedited again after the stop\n", root=self.wt)
+        self.repo.write("tools/new.txt", "made after the stop\n", root=self.wt)
+        self.repo.write("tools/keep.txt", "k\n", root=self.wt)
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        stop = out["stops"][0]
+        self.assertEqual(stop["code"], "remove-refused")
+        self.assertEqual(stop["paths"], ["tools/edit.txt", "tools/new.txt"])
+        self.assertEqual(self.read("tools/edit.txt", root=self.wt), "e\nedited again after the stop\n")
+        self.assertEqual(self.read("tools/new.txt", root=self.wt), "made after the stop\n")
+        self.assertFalse(os.path.lexists(os.path.join(self.wt, "tools/keep.txt")))
+        self.assertEqual(self.read("tools/edit.txt"), "e\nreturned from worktree\n")
 
 
 class ThreeWayTest(unittest.TestCase):
