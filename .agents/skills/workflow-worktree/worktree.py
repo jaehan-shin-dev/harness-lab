@@ -466,6 +466,7 @@ def clear_items(wt, items, matchers):
     skip 항목과 skip 규칙에 맞는 경로는 통째로 지운다. sync 사본은 끝내기가 판정할 때 본 내용(`seen`)과
     지문이 같은 파일만 지운다. 판정 뒤에 고치거나 새로 만든 파일은 돌아가지 않은 작업이라 남기고,
     그러면 git이 worktree 지우기를 거부한다(remove-refused).
+    지울 수 있는 것은 모두 지우고, 지우지 못한 경로(열린 파일·권한)를 worktree 기준으로 돌려준다.
     """
     skips = [i["path"] for i in items if i["mode"] == "skip"]
     syncs = [i["path"] for i in items if i["mode"] in SYNC_MODES]
@@ -475,22 +476,37 @@ def clear_items(wt, items, matchers):
             seen.update(item.get("seen", {}))
     skip_rules = [m for m in matchers if m.mode == "skip"]
     entries = untracked_entries(wt)
+    failed = []
+
+    def drop(rel):
+        full = os.path.join(wt, rel)
+        if os.path.isdir(full) and not os.path.islink(full):
+            shutil.rmtree(full, ignore_errors=True)  # 나머지는 지우고 남은 것을 아래에서 센다
+        else:
+            try:
+                os.unlink(full)
+            except OSError:
+                pass
+        if os.path.lexists(full):
+            left = leftovers(full) if os.path.isdir(full) and not os.path.islink(full) else []
+            failed.extend([rel + "/" + p for p in left] or [rel])
 
     def visit(rel):
         full = os.path.join(wt, rel)
         if covered(rel, skips) or skipped_by_rule(matchers, rel):
-            remove_entry(full)
+            drop(rel)
         elif os.path.isdir(full) and not os.path.islink(full):
             if (covered(rel, syncs) or any(is_under(t, rel) for t in skips + syncs)
                     or any(m.below(rel.split("/")) for m in skip_rules)):
                 for name in sorted(os.listdir(full)):
                     visit(rel + "/" + name)
         elif rel in seen and fingerprints(wt, rel).get(rel) == seen[rel]:
-            os.unlink(full)
+            drop(rel)
 
     for entry in sorted(entries):
         if not any(is_under(entry, other) for other in entries) and os.path.lexists(os.path.join(wt, entry)):
             visit(entry)
+    return failed
 
 
 def fingerprints(root, rel):
@@ -630,6 +646,25 @@ def receipt_item(item):
     return data
 
 
+def registered(repo, path):
+    """path가 아직 git에 worktree로 등록돼 있는지. 원래 폴더에서 묻는다."""
+    listing = run_git(repo.main, "worktree", "list", "--porcelain")
+    return any(os.path.realpath(line[len("worktree "):]) == os.path.realpath(path)
+               for line in listing.splitlines() if line.startswith("worktree "))
+
+
+def leftovers(root):
+    """폴더에 남은 파일과 빈 폴더를 git 없이 훑는다. 등록이 지워진 worktree에서 git을 부르면
+    위 폴더의 다른 저장소를 볼 수 있다."""
+    out = []
+    for top, dirs, files in os.walk(root):
+        rel = os.path.relpath(top, root)
+        names = files + [d for d in dirs if os.path.islink(os.path.join(top, d))
+                         or not os.listdir(os.path.join(top, d))]
+        out += [n if rel == "." else rel + "/" + n for n in names]
+    return sorted(out)
+
+
 def status_entries(cwd, *args):
     """`git status --porcelain -z`의 (XY, 경로) 목록."""
     raw = run_git(cwd, "status", "--porcelain", "-z", *args)
@@ -712,8 +747,11 @@ def decide(repo, receipt):
     if state == "creating":
         return "stop", Stop("create-incomplete", "만들기가 도중에 멈췄다. 끝난 단계를 보고 정리 방법을 정해야 한다.",
                             done=list(receipt["done"]))
-    # 끝내기가 worktree를 지운 뒤라면 없는 것이 맞다
-    if "worktree-remove" not in receipt["done"] and not os.path.isdir(receipt["worktree"]):
+    # worktree 지우기 단계에 들어섰으면(merge와 항목 되돌리기가 끝남) worktree에 남은 일이 없어 없어도 된다
+    done = receipt["done"]
+    removing = (state == "finishing" and "merge" in done
+                and ("restore-items" in done or not receipt["items"]))
+    if not removing and not os.path.isdir(receipt["worktree"]):
         return "stop", Stop("worktree-missing", "영수증은 있는데 worktree 폴더가 없다. 폴더를 지웠거나 옮겼는지 확인한다.",
                             [receipt["worktree"]])
     if state == "finishing":
@@ -944,13 +982,29 @@ def plan_finish(repo, receipt):
                 item["seen"] = sync_seen[item["path"]]  # worktree 지우기가 이 내용 그대로인 사본만 지운다
 
     def worktree_remove(ctx):
-        clear_items(wt, receipt["items"], matchers)  # 돌려줄 것은 restore-items에서 돌려줬다
-        code, out, err = try_git(repo.main, "worktree", "remove", wt)
-        if code != 0:  # 강제로 지우지 않고 멈춘다(C3). 남은 것을 보여 준다
-            left = [p for _, p in status_entries(wt, "--untracked-files=all")]
-            raise Stopped([Stop("remove-refused",
-                                "worktree에 예상 못 한 파일이 남아 git이 worktree 지우기를 거부했다. 합치기는 끝났다. "
-                                "남은 파일을 옮기거나 치운 뒤 다시 끝내기를 부른다.", left, git=(err + out).strip())])
+        text = ""
+        if registered(repo, wt):
+            # 돌려줄 것은 restore-items에서 돌려줬다. 폴더가 없으면 치울 것도 없고 git이 등록만 지운다
+            failed = clear_items(wt, receipt["items"], matchers) if os.path.isdir(wt) else []
+            if failed:  # git까지 가지 않았다. worktree는 그대로 저장소라 다시 부르면 다시 치운다
+                raise Stopped([Stop("remove-incomplete",
+                                    "worktree의 목록 항목을 치우다 일부를 지우지 못했다. git 등록은 남아 있고 합치기는 끝났다. "
+                                    "`.nfs`로 시작하는 파일은 어떤 프로세스가 아직 열고 있는 파일이다. "
+                                    "그 프로세스를 끄거나 권한을 고친 뒤 다시 끝내기를 부른다.", failed)])
+            code, out, err = try_git(repo.main, "worktree", "remove", wt)
+            text = (err + out).strip()
+            if code != 0 and registered(repo, wt):  # 지우기 전에 거부했다. 강제로 지우지 않고 멈춘다(C3)
+                left = [p for _, p in status_entries(wt, "--untracked-files=all")]
+                raise Stopped([Stop("remove-refused",
+                                    "worktree에 예상 못 한 파일이 남아 git이 worktree 지우기를 거부했다. 합치기는 끝났다. "
+                                    "남은 파일을 옮기거나 치운 뒤 다시 끝내기를 부른다.", left, git=text)])
+        if os.path.lexists(wt):
+            # git은 폴더를 지우다 실패해도 등록을 지운다. 남은 폴더는 저장소가 아니라 git을 부르지 않는다
+            raise Stopped([Stop("remove-incomplete",
+                                "worktree 폴더를 지우다 도중에 실패했다. git 등록은 지워졌고 합치기는 끝났다. "
+                                "`.nfs`로 시작하는 파일은 어떤 프로세스가 아직 열고 있는 파일이다. "
+                                "그 프로세스를 끄거나 권한을 고친 뒤, 남은 폴더를 지우고 다시 끝내기를 부른다.",
+                                leftovers(wt), git=text)])
 
     def branch_delete(ctx):
         run_git(repo.main, "branch", "-q", "-d", br)

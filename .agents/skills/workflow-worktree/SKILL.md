@@ -26,7 +26,7 @@ python3 <이 skill 폴더>/worktree.py finish <goal> --json   # 끝내기. 원�
 - python3 3.9 이상과 git 2.38 이상이 필요하다(merge 미리보기 `git merge-tree --write-tree`)
 - 저장소 안 어디서든 부른다. script가 원래 폴더와 worktree를 스스로 찾는다
 - 종료 코드: 0 성공 · 2 멈춤(`stops`에 code와 이유) · 1 script 오류(`error`)
-- 멈추면 그 단계는 아무것도 바꾸지 않았다. 끝내기의 `remove-refused`는 merge와 항목 되돌리기가 끝난 뒤에 날 수 있고, 다시 부르면 끝난 단계는 건너뛴다
+- 멈추면 그 단계는 아무것도 바꾸지 않았다. 끝내기의 `remove-refused`·`remove-incomplete`는 merge와 항목 되돌리기가 끝난 뒤에 날 수 있고, 다시 부르면 끝난 단계는 건너뛴다. `remove-incomplete`는 지울 수 있던 것은 이미 지운 상태다
 - worktree 세션 안에서 원래 폴더 쪽 `worktree.py` 실행이 막히면, worktree 안의 같은 경로 파일을 실행한다. 저장소에 들어 있는 skill이면 worktree에도 같은 파일이 있다
 
 ## goal 고르기
@@ -148,6 +148,7 @@ worktree 세션 안에서는 원래 폴더의 파일을 링크로 고치거나 �
 | `merge-conflict` | merge 미리보기에서 충돌이 난다 | 세션을 worktree로 옮겨 그 안에서 원래 브랜치를 먼저 merge하고, 충돌을 사용자와 풀어 커밋한다. 원래 폴더로 나와 다시 부른다 |
 | `main-dirty-overlap` | 원래 폴더의 미커밋 변경이 merge와 겹쳐 git이 거부했다 | 그 변경은 다른 세션이나 사용자의 작업일 수 있다. AI가 stash하거나 되돌리지 않는다. 주인이 커밋하거나 정리한 뒤 다시 부른다 |
 | `remove-refused` | worktree를 지우려는데 예상 못 한 파일이 남았다 | 남은 파일을 보이고, 옮길지 지울지 사용자와 정해 치운 뒤 다시 부른다. merge는 다시 하지 않는다 |
+| `remove-incomplete` | worktree를 지우다 도중에 실패해 파일이 남았다(`paths`). 어떤 프로세스가 연 파일(NFS의 `.nfs*`)이나 권한 때문이다 | 그 파일을 연 프로세스를 사용자와 찾아(`lsof <파일>`, `fuser -v <파일>`) 끄거나 권한을 고친다. 메시지가 "git 등록은 지워졌다"면 그 폴더는 더 이상 저장소가 아니다. 사용자 확인을 받아 남은 폴더를 지운다. 그다음 다시 부른다. merge는 다시 하지 않는다 |
 | `run-from-main` | `finish`를 worktree 안에서 불렀다 | 세션을 원래 폴더로 옮긴 뒤 부른다 |
 | `receipt-invalid` | 영수증을 읽을 수 없다 | 영수증 경로와 내용을 보이고 어떻게 할지 사용자가 정한다 |
 | `worktree-missing` | 영수증은 있는데 worktree 폴더가 없다 | 누가 왜 지웠는지 사용자에게 확인하고 정리 방법을 정한다 |

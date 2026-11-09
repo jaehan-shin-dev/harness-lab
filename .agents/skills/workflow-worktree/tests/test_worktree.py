@@ -24,7 +24,7 @@ STOP_CODES = {
     "not-git-repo", "goal-invalid", "branch-exists", "folder-exists", "git-busy", "list-invalid",
     "worktree-dirty", "base-moved", "sync-conflict", "move-target-exists", "merge-conflict",
     "main-dirty-overlap", "remove-refused", "run-from-main", "receipt-missing",
-    "receipt-invalid", "worktree-missing", "create-incomplete", "foreign-worktree",
+    "receipt-invalid", "worktree-missing", "create-incomplete", "foreign-worktree", "remove-incomplete",
 }
 
 
@@ -1218,6 +1218,27 @@ class ResumeTest(StopTestCase):
         self.assertEqual(git(self.repo.path, "branch", "--list", "goal/goal-x"), "")
         self.assertFalse(os.path.exists(self.repo.receipt_file()))
 
+    def test_finish_again_after_deleting_whole_worktree_once_items_are_restored_goes_to_the_end(self):
+        self.repo.list_file("link docs\n")
+        self.repo.write("docs/a.md", "a\n")
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.leave_unexpected_file()
+        code, out = self.repo.run("finish", "goal-x")  # merge·restore-items 뒤 remove-refused
+        self.assertEqual(out["stops"][0]["code"], "remove-refused")
+        merged = self.log()
+
+        shutil.rmtree(self.wt)  # 등록은 남고 폴더만 없다. 돌려줄 것은 이미 돌려줬다
+        code, out = self.repo.run("status", "goal-x")
+        self.assertEqual((code, out["action"]), (0, "continue-finish"), out)
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(self.log(), merged)
+        self.assertNotIn(self.wt, git(self.repo.path, "worktree", "list", "--porcelain"))
+        self.assertEqual(git(self.repo.path, "branch", "--list", "goal/goal-x"), "")
+        self.assertFalse(os.path.exists(self.repo.receipt_file()))
+        self.assertEqual(self.read("docs/a.md"), "a\n")
+
     def test_move_item_made_again_after_restore_is_remove_refused_not_move_target_exists(self):
         self.repo.list_file("link docs\nmove notes\n")
         self.repo.write("docs/a.md", "a\n")
@@ -1264,6 +1285,99 @@ class ResumeTest(StopTestCase):
         self.assertEqual(self.read("tools/new.txt", root=self.wt), "made after the stop\n")
         self.assertFalse(os.path.lexists(os.path.join(self.wt, "tools/keep.txt")))
         self.assertEqual(self.read("tools/edit.txt"), "e\nreturned from worktree\n")
+
+
+@unittest.skipIf(hasattr(os, "geteuid") and os.geteuid() == 0, "root는 쓰기 권한을 무시한다")
+class PartialRemoveTest(StopTestCase):
+    """Q17·Q25: worktree를 지우다 도중에 실패하는 경우(NFS의 열린 파일, 권한).
+    git은 폴더를 다 못 지워도 등록을 지운다. 그래서 남은 폴더는 저장소가 아니다.
+    실패는 진짜 조건으로 만든다: 추적 파일이 든 폴더의 쓰기 권한을 뺀다."""
+
+    def setUp(self):
+        super().setUp()
+        self.repo.write("src/deep/f1.txt", "1\n")
+        self.repo.write("src/deep/f2.txt", "2\n")
+        git(self.repo.path, "add", "src")
+        git(self.repo.path, "commit", "-q", "-m", "src")
+
+    def protect(self, rel):
+        full = os.path.join(self.wt, rel)
+        os.chmod(full, 0o555)
+        self.addCleanup(lambda: os.path.isdir(full) and os.chmod(full, 0o755))
+        return full
+
+    def registered(self):
+        return ("worktree " + self.wt) in git(self.repo.path, "worktree", "list", "--porcelain").splitlines()
+
+    def test_failure_while_deleting_stops_with_remove_incomplete_and_lists_leftovers(self):
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.protect("src/deep")
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        stop = out["stops"][0]
+        self.assertEqual(stop["code"], "remove-incomplete")
+        self.assertFalse(self.registered())  # git이 등록은 지웠다
+        self.assertIn("src/deep/f1.txt", stop["paths"])
+        self.assertIn("src/deep/f2.txt", stop["paths"])
+        for rel in stop["paths"]:
+            self.assertTrue(os.path.lexists(os.path.join(self.wt, rel)), rel)
+        self.assertTrue(stop["git"])
+        self.assertEqual(self.receipt()["state"], "finishing")
+        self.assertIn("merge", self.receipt()["done"])
+
+    def test_finish_again_with_leftover_folder_stops_again_instead_of_script_error(self):
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        deep = self.protect("src/deep")
+        self.repo.run("finish", "goal-x")
+        os.chmod(deep, 0o755)  # 원인은 고쳤지만 남은 폴더는 아직 그대로다
+
+        code, out = self.repo.run("status", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["action"], "continue-finish")
+        stop = self.assert_stops("remove-incomplete", "finish", "goal-x")
+        self.assertIn("src/deep/f1.txt", stop["paths"])
+
+    def test_finish_again_after_deleting_leftover_folder_goes_to_the_end(self):
+        base = self.repo.head()
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        deep = self.protect("src/deep")
+        self.repo.run("finish", "goal-x")
+        merged = git(self.repo.path, "log", "--format=%H %P", "main")
+        os.chmod(deep, 0o755)
+        shutil.rmtree(self.wt)  # 사용자가 확인하고 남은 폴더를 지운다
+
+        code, out = self.repo.run("status", "goal-x")
+        self.assertEqual((code, out["action"]), (0, "continue-finish"), out)
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(git(self.repo.path, "log", "--format=%H %P", "main"), merged)  # merge를 다시 하지 않았다
+        self.assertEqual(git(self.repo.path, "rev-list", "--merges", "--count", base + "..HEAD").strip(), "1")
+        self.assertEqual(git(self.repo.path, "branch", "--list", "goal/goal-x"), "")
+        self.assertFalse(os.path.exists(self.repo.receipt_file()))
+
+    def test_failure_while_clearing_skip_item_stops_and_finish_again_goes_to_the_end(self):
+        self.repo.list_file("skip build\n")
+        base = self.repo.head()
+        self.repo.run("create", "goal-x")
+        self.commit_in_wt()
+        self.repo.write("build/sub/out.bin", "made by a build in worktree\n", root=self.wt)
+        sub = self.protect("build/sub")
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 2, out)
+        stop = out["stops"][0]
+        self.assertEqual(stop["code"], "remove-incomplete")
+        self.assertEqual(stop["paths"], ["build/sub/out.bin"])
+        self.assertTrue(self.registered())  # git까지 가지 않았다. worktree는 그대로 저장소다
+
+        os.chmod(sub, 0o755)
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(git(self.repo.path, "rev-list", "--merges", "--count", base + "..HEAD").strip(), "1")
+        self.assertFalse(os.path.lexists(self.wt))
+        self.assertFalse(os.path.exists(self.repo.receipt_file()))
 
 
 class ThreeWayTest(unittest.TestCase):
