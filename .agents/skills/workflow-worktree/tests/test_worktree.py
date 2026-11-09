@@ -630,6 +630,35 @@ class ModeTest(unittest.TestCase):
         self.assertTrue(os.path.islink(os.path.join(self.wt, "docs")))
         self.assertFalse(os.path.islink(os.path.join(self.wt, "notes")))
 
+    def ignore_cache(self, mode):
+        """`.gitignore`가 무시하는 cache를 목록 파일에도 적는다(예: `skip skill-eval/.venv`)."""
+        self.repo.write(".gitignore", "cache/\n")
+        git(self.repo.path, "add", ".gitignore")
+        git(self.repo.path, "commit", "-q", "-m", "ignore")
+        self.repo.list_file("%s cache\n" % mode)
+        self.repo.write("cache/x", "x\n")
+
+    def test_ignored_skip_path_in_list_does_not_block_moving_tracked_edits(self):
+        self.ignore_cache("skip")
+        self.repo.write("a.txt", "a\nnot committed\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(self.read("a.txt", root=self.wt), "a\nnot committed\n")
+        self.assertEqual(git(self.repo.path, "status", "--porcelain"), "")
+        self.assertEqual(git(self.repo.path, "stash", "list"), "")
+        self.assertEqual(self.read("cache/x"), "x\n")
+
+    def test_ignored_link_path_in_list_does_not_block_moving_new_files(self):
+        self.ignore_cache("link")
+        self.repo.write("new.txt", "new\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["moved_by_git"], ["new.txt"])
+        self.assertEqual(self.read("new.txt", root=self.wt), "new\n")
+        self.assertFalse(os.path.exists(os.path.join(self.repo.path, "new.txt")))
+        self.assertEqual(git(self.repo.path, "stash", "list"), "")
+        self.assertEqual(os.readlink(os.path.join(self.wt, "cache")), os.path.join(self.repo.path, "cache"))
+
     def test_most_specific_line_wins_per_path(self):
         # 뒤에 적은 줄이 이기는 규칙이었다면 결과가 반대가 되도록 순서를 놓았다
         self.repo.list_file("move .goal/{goal}\nlink .goal/*\nskip **/__pycache__\ncopy notes\n")

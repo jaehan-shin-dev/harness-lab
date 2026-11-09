@@ -814,6 +814,8 @@ def plan_create(repo, rules, items, goal):
     br = branch_name(goal)
     listed = [i for i in items if i.listed]
     present = [i.path for i in listed if not i.missing]
+    # 무시되는 경로를 제외 pathspec에 넣으면 stash 안의 git add가 거부한다. -u는 원래 그것을 stash하지 않는다
+    excludes = [i.path for i in listed if not i.missing and i.git != "ignored"]
     matchers = [Matcher(r, goal) for r in rules.rules]
     # 목록 항목은 git 방식으로 옮기지 않는다(stash에서 뺀다)
     moved = [p for xy, p in status_entries(repo.main, "--untracked-files=all")
@@ -821,8 +823,8 @@ def plan_create(repo, rules, items, goal):
 
     def stash(ctx):
         args = ["stash", "push", "-q", "-u", "-m", "workflow-worktree:" + goal]
-        if present:
-            args += ["--", "."] + [":(exclude,literal)" + p for p in present]
+        if excludes:
+            args += ["--", "."] + [":(exclude,literal)" + p for p in excludes]
         run_git(repo.main, *args)
         ctx["stash"] = run_git(repo.main, "rev-parse", "stash@{0}").strip()
 
