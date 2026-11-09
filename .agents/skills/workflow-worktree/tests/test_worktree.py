@@ -630,6 +630,35 @@ class ModeTest(unittest.TestCase):
         self.assertTrue(os.path.islink(os.path.join(self.wt, "docs")))
         self.assertFalse(os.path.islink(os.path.join(self.wt, "notes")))
 
+    def test_every_literal_list_line_missing_at_create_is_reported_whatever_its_mode(self):
+        # Q16: 목록에 있지만 지금 없는 항목은 건너뛰고 보고한다
+        self.repo.list_file("link a\ncopy b\nskip c\nmove d\nsync e\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(sorted(out["missing"]), ["a", "b", "c", "d", "e"])
+
+    def test_missing_link_copy_skip_are_only_reported_and_finish_is_unchanged(self):
+        self.repo.list_file("link a\ncopy b\nskip c\nmove d\nsync e\n")
+        out = subprocess.run([sys.executable, SCRIPT, "create", "goal-x"],
+                             cwd=self.repo.path, capture_output=True, text=True)
+        self.assertEqual(out.returncode, 0, out.stderr)
+        for path in "abcde":
+            self.assertIn("만들 때 없던 항목: " + path, out.stdout)
+        with open(self.repo.receipt_file()) as f:
+            recorded = {i["path"]: i for i in json.load(f)["items"]}
+        self.assertEqual(sorted(recorded), ["d", "e"])  # 돌려줄 일이 있는 move·sync만 영수증에 적는다
+        self.assertTrue(recorded["d"]["missing"] and recorded["e"]["missing"])
+        self.commit_in_wt("goal.txt", "goal work\n")
+        code, out = self.repo.run("finish", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertFalse(os.path.lexists(self.wt))
+
+    def test_pattern_lines_and_lines_beaten_by_a_more_specific_one_are_not_reported(self):
+        self.repo.list_file("skip **/__pycache__\nlink .goal/*\nmove .goal/{goal}\nsync tools\nskip tools/cache\n")
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["missing"], [".goal/goal-x", "tools", "tools/cache"])
+
     def ignore_cache(self, mode):
         """`.gitignore`가 무시하는 cache를 목록 파일에도 적는다(예: `skip skill-eval/.venv`)."""
         self.repo.write(".gitignore", "cache/\n")

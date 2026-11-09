@@ -315,16 +315,21 @@ def inventory(repo, rules, goal):
             flatten(node.children)
     flatten(tree)
 
-    for m in matchers:
-        rel = m.literal_path
-        if (m.mode in MISSING_MODES and rel and not os.path.lexists(os.path.join(root, rel))
-                and most_specific(matchers, rel) is m):
+    for m, rel in missing_lines(root, matchers):
+        if m.mode in MISSING_MODES:  # 끝낼 때 worktree에 생겨 있으면 돌려줘야 해서 영수증에 적는다
             item = Item(rel, None, m.mode, m, [], missing=True)
             owners = [i for i in items if is_under(rel, i.path)]
             if owners:
                 max(owners, key=lambda i: len(i.path)).excepts.append(rel)
             items.append(item)
     return items
+
+
+def missing_lines(root, matchers):
+    """Q16: 글자 그대로인 목록 줄 중 지금 없는 경로. 그 경로에서 가장 구체적인 줄이 그 줄일 때만 센다."""
+    return [(m, m.literal_path) for m in matchers
+            if m.literal_path and not os.path.lexists(os.path.join(root, m.literal_path))
+            and most_specific(matchers, m.literal_path) is m]
 
 
 def unlisted(repo, items):
@@ -875,7 +880,8 @@ def plan_create(repo, rules, items, goal):
         steps.append(Step("setup", setup))
     ctx = {"worktree": wt, "branch": br, "moved_by_git": moved, "setup": [],
            "rules": [rule_json(r) for r in rules.rules],
-           "items": [receipt_item(i) for i in sorted(listed, key=lambda i: i.path)]}
+           "items": [receipt_item(i) for i in sorted(listed, key=lambda i: i.path)],
+           "missing": sorted(rel for _, rel in missing_lines(repo.top, matchers))}
     return steps, ctx
 
 
@@ -1049,7 +1055,7 @@ def cmd_create(cwd, goal):
     shown = [{k: v for k, v in i.items() if k != "base"} for i in ctx["items"]]
     return EXIT_OK, {"ok": True, "worktree": ctx["worktree"], "branch": ctx["branch"],
                      "moved_by_git": ctx["moved_by_git"], "items": shown,
-                     "missing": [i["path"] for i in ctx["items"] if i.get("missing")],
+                     "missing": ctx["missing"],
                      "setup": ctx["setup"]}
 
 
