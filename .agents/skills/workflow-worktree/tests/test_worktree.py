@@ -84,11 +84,11 @@ class Repo:
     def wt_path(self, goal):
         return os.path.join(self.parent, os.path.basename(self.path) + "-" + goal)
 
-    def run(self, *args, cwd=None):
+    def run(self, *args, cwd=None, env=None):
         """script를 --json으로 부르고 (종료 코드, JSON)을 돌려준다."""
         out = subprocess.run(
             [sys.executable, SCRIPT, *args, "--json"],
-            cwd=cwd or self.path, capture_output=True, text=True,
+            cwd=cwd or self.path, capture_output=True, text=True, env=env,
         )
         try:
             data = json.loads(out.stdout)
@@ -139,10 +139,10 @@ class StopTestCase(unittest.TestCase):
         self.addCleanup(self.repo.cleanup)
         self.wt = self.repo.wt_path("goal-x")
 
-    def assert_stops(self, code, *args, cwd=None, finishing=False):
+    def assert_stops(self, code, *args, cwd=None, finishing=False, env=None):
         """명령이 code로 멈추고 아무것도 바꾸지 않았는지. finishing이면 영수증 상태가 finishing으로 바뀐 것만 허용한다."""
         before = self.repo.snapshot()
-        exit_code, out = self.repo.run(*args, cwd=cwd)
+        exit_code, out = self.repo.run(*args, cwd=cwd, env=env)
         after = self.repo.snapshot()
         self.assertEqual(exit_code, 2, out)
         self.assertIn(code, [s["code"] for s in out["stops"]], out)
@@ -1065,6 +1065,37 @@ class CreateStopTest(StopTestCase):
         os.remove(os.path.join(self.repo.path, "new.txt"))  # rebase는 미커밋 작업이 있으면 시작하지 않는다
         self.start_conflicting("rebase", "side")
         self.assert_stops("git-busy", "create", "goal-x")
+
+    def git_call_log(self):
+        """PATH 맨 앞에 진짜 git을 부르기 전에 작업 폴더를 적는 얇은 git을 둔다. (env, 기록 파일)."""
+        real = shutil.which("git")
+        shim = tempfile.mkdtemp(prefix="wt-git-")
+        self.addCleanup(shutil.rmtree, shim, True)
+        log = os.path.join(shim, "calls.log")
+        with open(os.path.join(shim, "git"), "w") as f:
+            f.write('#!/bin/sh\npwd -P >> "%s"\nexec "%s" "$@"\n' % (log, real))
+        os.chmod(os.path.join(shim, "git"), 0o755)
+        return dict(os.environ, PATH=shim + os.pathsep + os.environ.get("PATH", "")), log
+
+    def test_create_again_from_main_stops_with_branch_and_folder_exists_and_keeps_receipt(self):
+        self.repo.run("create", "goal-x")
+        self.repo.write("later.txt", "made in main after create\n")
+        self.assert_stops("branch-exists", "create", "goal-x")  # 영수증을 덮어쓰지 않는다(전후 같음)
+        code, out = self.repo.run("create", "goal-x")
+        self.assertEqual(sorted(s["code"] for s in out["stops"]), ["branch-exists", "folder-exists"])
+
+    def test_create_inside_its_own_worktree_stops_without_git_on_main(self):
+        # C3: worktree 세션은 원래 폴더를 대상으로 한 git 명령을 막는다
+        self.repo.run("create", "goal-x")
+        env, log = self.git_call_log()
+        stop = self.assert_stops("branch-exists", "create", "goal-x", cwd=self.wt, env=env)
+        self.assertIn("goal/goal-x", stop["message"])
+        code, out = self.repo.run("create", "goal-x", cwd=self.wt)
+        self.assertIn("folder-exists", [s["code"] for s in out["stops"]])
+        with open(log) as f:
+            dirs = f.read().split()
+        self.assertTrue(dirs)  # 얇은 git을 거쳤다
+        self.assertNotIn(self.repo.path, dirs)
 
     def test_inside_worktree_this_skill_did_not_make_stops_with_foreign_worktree(self):
         other = os.path.join(self.repo.parent, "other")

@@ -782,12 +782,14 @@ def find_stash(cwd, sha):
     raise GitError("stash %s를 찾지 못했다" % sha)
 
 
-def create_stops(repo, goal):
-    """Q16 검사. 걸린 것을 모두 모아 돌려준다."""
+def create_stops(repo, goal, receipt=None):
+    """Q16 검사. 걸린 것을 모두 모아 돌려준다.
+    영수증이 있으면 브랜치가 있다(브랜치를 지운 뒤에 영수증을 지운다). 그때는 원래 폴더에 git을 부르지 않는다:
+    worktree 세션은 원래 폴더를 대상으로 한 git 명령을 막는다(C3)."""
     wt = worktree_path(repo, goal)
     br = branch_name(goal)
     stops = []
-    if try_git(repo.main, "rev-parse", "--verify", "--quiet", "refs/heads/" + br)[0] == 0:
+    if receipt is not None or try_git(repo.main, "rev-parse", "--verify", "--quiet", "refs/heads/" + br)[0] == 0:
         stops.append(Stop("branch-exists", "브랜치 '%s'가 이미 있다. 다른 goal 이름을 쓰거나 그 브랜치를 정리한다." % br))
     if os.path.lexists(wt):
         stops.append(Stop("folder-exists", "worktree를 만들 폴더가 이미 있다. 다른 goal 이름을 쓰거나 그 폴더를 정리한다.", [wt]))
@@ -1041,9 +1043,12 @@ def apply(steps, ctx, receipt):
 def cmd_create(cwd, goal):
     repo = read_repo(cwd)
     check_goal(goal)
-    _, stop = decide(repo, load_receipt(repo, goal))  # 영수증이 있으면 아래 branch·folder 검사가 걸린다
+    receipt = load_receipt(repo, goal)
+    _, stop = decide(repo, receipt)
     if stop is not None:
         raise Stopped([stop])
+    if receipt is not None:  # 영수증을 덮어쓰지 않는다. 이 goal의 브랜치·폴더가 이미 있어 멈춘다
+        raise Stopped(create_stops(repo, goal, receipt))
     rules = load_rules(repo)
     items = inventory(repo, rules, goal)
     steps, ctx = plan_create(repo, rules, items, goal)
